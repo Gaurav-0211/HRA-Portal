@@ -47,7 +47,7 @@ public class EmployeeController {
 
     // DELETE Request to remove an employee
     @DeleteMapping("/delete/{id}")
-    ResponseEntity<Response> deleteEmployee(@RequestParam Long id){
+    ResponseEntity<Response> deleteEmployee(@PathVariable Long id){
         this.employeeService.deleteEmployee(id);
         Response response = Response.buildResponse(
                 "SUCCESS",
@@ -75,7 +75,7 @@ public class EmployeeController {
 
     // GET Request to fetch a single Employee
     @GetMapping("/getEmployee/{id}")
-    public ResponseEntity<Response> getEmpById(@RequestParam Long id){
+    public ResponseEntity<Response> getEmpById(@PathVariable Long id){
         EmployeeDto dto = this.employeeService.getEmployeeById(id);
         Response response = Response.buildResponse(
                 "SUCCESS",

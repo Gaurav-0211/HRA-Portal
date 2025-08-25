@@ -75,7 +75,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void deleteEmployee(Long id) {
         log.info("Delete employee triggered in service impl");
         Employee employee = this.employeeRepository.findById(id)
-                .orElseThrow(()-> new NoEmployeeExist("No employee exist with given Id"));
+                .orElseThrow(()-> new NoEmployeeExist("No employee exist with given Id"+id));
         this.employeeRepository.delete(employee);
     }
 

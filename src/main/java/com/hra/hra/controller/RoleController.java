@@ -46,7 +46,7 @@ public class RoleController {
 
     // DELETE Request to delete a Role
     @DeleteMapping("/delete/{id}")
-    ResponseEntity<Response> deleteRole(@RequestParam Long id){
+    ResponseEntity<Response> deleteRole(@PathVariable Long id){
         this.roleService.deleteRole(id);
         Response response = Response.buildResponse(
                 "SUCCESS",
