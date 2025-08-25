@@ -2,15 +2,19 @@ package com.hra.hra.service.impl;
 
 import com.hra.hra.dto.EmployeeDto;
 import com.hra.hra.entity.Employee;
+import com.hra.hra.entity.Role;
 import com.hra.hra.exception.EmployeeAlreadyExist;
 import com.hra.hra.exception.NoEmployeeExist;
+import com.hra.hra.exception.NoRoleExist;
 import com.hra.hra.repository.EmployeeRepository;
+import com.hra.hra.repository.RoleRepository;
 import com.hra.hra.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,18 +29,30 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private ModelMapper mapper;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     // API to register a new Employee
     @Override
     public EmployeeDto register(EmployeeDto employeeDto) {
         log.info("Register api triggered in service Impl");
-        Employee employee = this.employeeRepository.getByEmail(employeeDto.getEmail());
-        if(employee != null){
-            throw new EmployeeAlreadyExist("Employee already exist with the given email id");
-        }
-        employee = this.mapper.map(employeeDto, Employee.class);
-        this.employeeRepository.save(employee);
+        Employee employee = this.mapper.map(employeeDto, Employee.class);
+
+        // Fetch Role from DB
+        Role role = this.roleRepository.findById(employeeDto.getRoleId())
+                .orElseThrow(() -> new NoRoleExist("No Role Found"));
+
+        // Set role in employee
+        employee.setRole(role);
+
+        // Set created and updated time
+        employee.setCreatedAt(LocalDateTime.now());
+        employee.setUpdatedAt(LocalDateTime.now());
+
+        // Save employee
+        Employee savedEmployee = employeeRepository.save(employee);
         log.info("User registered success service impl");
-        return this.mapper.map(employee, EmployeeDto.class);
+        return this.mapper.map(savedEmployee, EmployeeDto.class);
     }
 
     // API to update an existing user
@@ -48,6 +64,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new NoEmployeeExist("No employee found with the given email Id");
         }
         employee = this.mapper.map(employeeDto, Employee.class);
+        employee.setUpdatedAt(LocalDateTime.now());
         this.employeeRepository.save(employee);
         log.info("Employee updated success service impl");
         return this.mapper.map(employee, EmployeeDto.class);

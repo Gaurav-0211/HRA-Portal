@@ -34,9 +34,17 @@ public class EmployeeDto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    private Long contactNumber;
+    @NotEmpty(message = "Contact number cannot be empty")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Contact number must be exactly 10 digits")
+    private String contactNumber;
 
-    @NotEmpty(message = "please enter full address")
+    @NotEmpty(message = "Please enter full address")
     private String address;
+
+    // For input
+    private Long roleId;
+
+    // For output
+    private RoleDto role;
 
 }

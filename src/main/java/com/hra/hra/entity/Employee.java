@@ -27,7 +27,7 @@ public class Employee {
     private String password;
 
     @Column(nullable = false)
-    private Long contactNumber;
+    private String contactNumber;
 
     @Column(nullable = false)
     private String address;
@@ -35,6 +35,10 @@ public class Employee {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
 
 }
