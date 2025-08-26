@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -52,5 +54,8 @@ public class EmployeeDto {
 
     // For output department
     private DepartmentDto department;
+
+    // To get List of leave applied by an employee
+    private List<LeaveDto> leaves;
 
 }

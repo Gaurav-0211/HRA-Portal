@@ -62,4 +62,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()));
     }
 
+    // No Leave Exist for Leave Entity
+    @ExceptionHandler(NoLeaveExist.class)
+    public ResponseEntity<Response> handleNoLeaveExistException(NoLeaveExist ex, HttpServletRequest request) {
+        Response response = Response.buildResponse(
+                "FAILED",
+                ex.getMessage(),
+                null,
+                HttpStatus.NOT_FOUND.value(),
+                "Process executed success"
+        );
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()));
+    }
+
 }
