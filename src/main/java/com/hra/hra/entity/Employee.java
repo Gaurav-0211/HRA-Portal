@@ -36,9 +36,13 @@ public class Employee {
 
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id", nullable = false)
+    private Department department;
 
 
 }

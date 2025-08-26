@@ -1,18 +1,19 @@
 package com.hra.hra.service;
 
 import com.hra.hra.dto.EmployeeDto;
+import com.hra.hra.dto.Response;
 
 import java.util.List;
 
 public interface EmployeeService {
 
-    EmployeeDto register(EmployeeDto employeeDto);
+    Response register(EmployeeDto employeeDto);
 
-    EmployeeDto update(EmployeeDto employeeDto);
+    Response update(EmployeeDto employeeDto);
 
-    void deleteEmployee(Long id);
+    Response deleteEmployee(Long id);
 
-    List<EmployeeDto> getAllEmployee();
+    Response getAllEmployee();
 
-    EmployeeDto getEmployeeById(Long id);
+    Response getEmployeeById(Long id);
 }

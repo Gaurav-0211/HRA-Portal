@@ -41,10 +41,16 @@ public class EmployeeDto {
     @NotEmpty(message = "Please enter full address")
     private String address;
 
-    // For input
+    // For input Role
     private Long roleId;
 
-    // For output
+    // For output Role
     private RoleDto role;
+
+    // For input department
+    private Long departmentId;
+
+    // For output department
+    private DepartmentDto department;
 
 }

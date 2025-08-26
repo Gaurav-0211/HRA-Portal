@@ -49,4 +49,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()));
     }
 
+    // No Department Exist for Department Entity
+    @ExceptionHandler(NoDepartmentExist.class)
+    public ResponseEntity<Response> handleNoDepartmentExistException(NoDepartmentExist ex, HttpServletRequest request) {
+        Response response = Response.buildResponse(
+                "FAILED",
+                ex.getMessage(),
+                null,
+                HttpStatus.NOT_FOUND.value(),
+                "Process executed success"
+        );
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()));
+    }
+
 }

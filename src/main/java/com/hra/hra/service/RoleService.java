@@ -1,15 +1,16 @@
 package com.hra.hra.service;
 
+import com.hra.hra.dto.Response;
 import com.hra.hra.dto.RoleDto;
 
 import java.util.List;
 
 public interface RoleService {
-    RoleDto addRole(RoleDto roleDto);
+    Response addRole(RoleDto roleDto);
 
-    void deleteRole(Long id);
+    Response deleteRole(Long id);
 
-    RoleDto updateRole(RoleDto roleDto);
+    Response updateRole(RoleDto roleDto);
 
-    List<RoleDto> getAllRole();
+    Response getAllRole();
 }

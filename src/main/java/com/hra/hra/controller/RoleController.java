@@ -19,57 +19,33 @@ public class RoleController {
     // POST Request to add a New Role
     @PostMapping("/addRole")
     ResponseEntity<Response> addNewRole(@RequestBody RoleDto roleDto){
-        RoleDto dto = this.roleService.addRole(roleDto);
-        Response response = Response.buildResponse(
-                "SUCCESS",
-                "Role added success",
-                dto,
-                200,
-                "Execution done success"
-        );
+        Response response = this.roleService.addRole(roleDto);
+
         return ResponseEntity.ok(response);
     }
 
     // PUT Request to update an existing Role
     @PutMapping("/updateRole")
     ResponseEntity<Response> updateRole(@RequestBody RoleDto roleDto){
-        RoleDto dto = this.roleService.updateRole(roleDto);
-        Response response = Response.buildResponse(
-                "SUCCESS",
-                "Role Updated successfully",
-                dto,
-                200,
-                "Execution done"
-        );
+        Response response = this.roleService.updateRole(roleDto);
+
         return ResponseEntity.ok(response);
     }
 
     // DELETE Request to delete a Role
     @DeleteMapping("/delete/{id}")
     ResponseEntity<Response> deleteRole(@PathVariable Long id){
-        this.roleService.deleteRole(id);
-        Response response = Response.buildResponse(
-                "SUCCESS",
-                "Role Deleted Success",
-                null,
-                200,
-                "Execution Done"
-        );
+        Response response = this.roleService.deleteRole(id);
+
         return ResponseEntity.ok(response);
     }
 
     // GET Request to Fetch all Roles from DB
     @GetMapping("/getAll")
     ResponseEntity<Response> getAllRole(){
-       List<RoleDto> roles =  this.roleService.getAllRole();
-       Response response = Response.buildResponse(
-               "SUCCESS",
-               "All Role Fetched",
-               roles,
-               200,
-               "Execution complete"
-       );
-       return ResponseEntity.ok(response);
+        Response response =  this.roleService.getAllRole();
+
+        return ResponseEntity.ok(response);
     }
 
 }

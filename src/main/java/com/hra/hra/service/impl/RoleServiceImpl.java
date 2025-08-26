@@ -1,5 +1,7 @@
 package com.hra.hra.service.impl;
 
+import com.hra.hra.config.AppConstants;
+import com.hra.hra.dto.Response;
 import com.hra.hra.dto.RoleDto;
 import com.hra.hra.entity.Role;
 import com.hra.hra.exception.EmployeeAlreadyExist;
@@ -25,10 +27,13 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private ModelMapper mapper;
 
+    @Autowired
+    private Response response;
+
 
     // API to add new Role
     @Override
-    public RoleDto addRole(RoleDto roleDto) {
+    public Response addRole(RoleDto roleDto) {
         log.info("Add new role in RoleService Impl");
         Role role = this.roleRepository.getByRoleName(roleDto.getRoleName());
         if(role != null){
@@ -36,38 +41,63 @@ public class RoleServiceImpl implements RoleService {
         }
         role =  mapper.map(roleDto, Role.class);
         this.roleRepository.save(role);
-        return mapper.map(role, RoleDto.class);
+        // Return a response
+        response.setStatus("SUCCESS");
+        response.setMessage("Role added successfully");
+        response.setData(mapper.map(role, RoleDto.class));
+        response.setStatusCode(AppConstants.CREATED);
+        response.setResponse_message("Execution process completed");
+        return response;
     }
 
     // API to delete Role
     @Override
-    public void deleteRole(Long id) {
+    public Response deleteRole(Long id) {
         log.info("Delete Role in RoleServiceImpl");
         Role role = this.roleRepository.findById(id)
                 .orElseThrow(()->new NoRoleExist("No role found with given Id"));
         this.roleRepository.delete(role);
+        response.setStatus("SUCCESS");
+        response.setMessage("Role deleted successfully");
+        response.setData(null);
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Execution process completed");
+
+        return response;
     }
 
     // API to update an existing role
     @Override
-    public RoleDto updateRole(RoleDto roleDto) {
+    public Response updateRole(RoleDto roleDto) {
         Role role = this.roleRepository.getByRoleName(roleDto.getRoleName());
         if(role == null){
             throw new NoRoleExist("No role exist with given Role Name");
         }
         role = this.mapper.map(roleDto, Role.class);
         this.roleRepository.save(role);
-        return this.mapper.map(role, RoleDto.class);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Role updated successfully");
+        response.setData(mapper.map(role, RoleDto.class));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Execution process completed");
+        return response;
     }
 
     // API to get all Roles
     @Override
-    public List<RoleDto> getAllRole() {
+    public Response getAllRole() {
         log.info("Get all role api in Role Service Impl");
         List<Role> roles = this.roleRepository.findAll();
         if(roles == null){
             throw new NoRoleExist("No role exist till now");
         }
-        return roles.stream().map((role)->this.mapper.map(role, RoleDto.class)).collect(Collectors.toList());
+
+        response.setStatus("SUCCESS");
+        response.setMessage("All Role fetched successfully");
+        response.setData(roles.stream().map((role) -> this.mapper.map(role, RoleDto.class)).collect(Collectors.toList()));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Execution process completed");
+        return response;
     }
 }
