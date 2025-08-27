@@ -5,6 +5,7 @@ import com.hra.hra.dto.Response;
 import com.hra.hra.dto.RoleDto;
 import com.hra.hra.entity.Role;
 import com.hra.hra.exception.EmployeeAlreadyExist;
+import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.exception.NoRoleExist;
 import com.hra.hra.repository.RoleRepository;
 import com.hra.hra.service.RoleService;
@@ -68,17 +69,15 @@ public class RoleServiceImpl implements RoleService {
 
     // API to update an existing role
     @Override
-    public Response updateRole(RoleDto roleDto) {
-        Role role = this.roleRepository.getByRoleName(roleDto.getRoleName());
-        if(role == null){
-            throw new NoRoleExist("No role exist with given Role Name");
-        }
-        role = this.mapper.map(roleDto, Role.class);
-        this.roleRepository.save(role);
+    public Response updateRole(Long id, RoleDto roleDto) {
+        Role role = this.roleRepository.findById(id)
+                .orElseThrow(()-> new NoDataExist("No Role exist with the given role Id"));
+        this.mapper.map(roleDto, Role.class);
+        Role saved = this.roleRepository.save(role);
 
         response.setStatus("SUCCESS");
         response.setMessage("Role updated successfully");
-        response.setData(mapper.map(role, RoleDto.class));
+        response.setData(mapper.map(saved, RoleDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
         return response;

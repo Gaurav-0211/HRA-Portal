@@ -12,5 +12,5 @@ public interface DepartmentService {
 
     Response deleteDepartment(Long id);
 
-    Response updateDepartment(DepartmentDto departmentDto);
+    Response updateDepartment(Long id,DepartmentDto departmentDto);
 }

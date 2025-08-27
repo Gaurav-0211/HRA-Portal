@@ -17,16 +17,16 @@ public class EmployeeController {
 
     // POST Request to Register an Employee
     @PostMapping("/register")
-    ResponseEntity<Response> registerEmployee( @RequestBody @Valid EmployeeDto employeeDto){
+    public ResponseEntity<Response> registerEmployee( @RequestBody @Valid EmployeeDto employeeDto){
 
         Response response = this.employeeService.register(employeeDto);
         return  ResponseEntity.ok(response);
     }
 
     // PUT Request to update an existing employee
-    @PutMapping("/update-employee")
-    ResponseEntity<Response> updateEmployee(@RequestBody EmployeeDto employeeDto){
-        Response response = this.employeeService.update(employeeDto);
+    @PutMapping("/update-employee/{id}")
+    ResponseEntity<Response> updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto employeeDto){
+        Response response = this.employeeService.update(id,employeeDto);
         return ResponseEntity.ok(response);
     }
 

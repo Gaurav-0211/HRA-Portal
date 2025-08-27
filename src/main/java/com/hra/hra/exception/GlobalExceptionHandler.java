@@ -24,8 +24,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(HttpStatus.CONFLICT.value()));
     }
 
-    @ExceptionHandler(NoEmployeeExist.class)
-    public ResponseEntity<Response> handleNoEmployeeExistException(NoEmployeeExist ex, HttpServletRequest request) {
+    @ExceptionHandler(NoDataExist.class)
+    public ResponseEntity<Response> handleNoEmployeeExistException(NoDataExist ex, HttpServletRequest request) {
         Response response = Response.buildResponse(
                 "FAILED",
                 ex.getMessage(),

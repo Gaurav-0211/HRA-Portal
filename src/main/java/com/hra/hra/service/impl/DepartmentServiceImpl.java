@@ -4,6 +4,7 @@ import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.DepartmentDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Department;
+import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.exception.NoDepartmentExist;
 import com.hra.hra.repository.DepartmentRepository;
 import com.hra.hra.service.DepartmentService;
@@ -76,18 +77,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     // API to update an existing department
     @Override
-    public Response updateDepartment(DepartmentDto departmentDto) {
+    public Response updateDepartment(Long id, DepartmentDto departmentDto) {
         log.info("Update department in service Impl");
-        Department department = this.repository.getByDepartmentName(departmentDto.getDepartmentName());
-        if (department == null){
-            throw new NoDepartmentExist("No department exist with the given name");
-        }
-        department = this.mapper.map(departmentDto, Department.class);
-
-        this.repository.save(department);
+        Department department = this.repository.findById(id)
+                .orElseThrow(()-> new NoDataExist("No department exist with the given id"));
+        this.mapper.map(departmentDto,Department.class);
+        Department saved = this.repository.save(department);
         response.setStatus("SUCCESS");
         response.setMessage("Department updated successfully");
-        response.setData(this.mapper.map(department, DepartmentDto.class));
+        response.setData(this.mapper.map(saved, DepartmentDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
         return response;

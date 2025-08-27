@@ -5,12 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NoEmployeeExist extends RuntimeException{
+public class NoDataExist extends RuntimeException{
     private String message;
 
-    NoEmployeeExist(){}
+    NoDataExist(){}
 
-    public NoEmployeeExist(String message){
+    public NoDataExist(String message){
         super();
         this.message = message;
     }

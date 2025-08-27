@@ -7,7 +7,7 @@ import com.hra.hra.entity.Department;
 import com.hra.hra.entity.Employee;
 import com.hra.hra.entity.Role;
 import com.hra.hra.exception.NoDepartmentExist;
-import com.hra.hra.exception.NoEmployeeExist;
+import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.exception.NoRoleExist;
 import com.hra.hra.repository.DepartmentRepository;
 import com.hra.hra.repository.EmployeeRepository;
@@ -75,22 +75,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     // API to update an existing user
     @Override
-    public Response update(EmployeeDto employeeDto) {
+    public Response update(Long id, EmployeeDto employeeDto) {
         log.info("Update employee in service Impl triggered");
-        Employee employee = this.employeeRepository.getByEmail(employeeDto.getEmail());
-        if(employee == null){
-            throw new NoEmployeeExist("No employee found with the given email Id");
-        }
-        employee = this.mapper.map(employeeDto, Employee.class);
+        Employee employee = this.employeeRepository.findById(id)
+                .orElseThrow(()->new NoDataExist("No Employee Exist with given Id"));
+        this.mapper.map(employeeDto, Employee.class);
         employee.setUpdatedAt(LocalDateTime.now());
-        this.employeeRepository.save(employee);
+        Employee saved = this.employeeRepository.save(employee);
         log.info("Employee updated success service impl");
 
         // Sending a proper response from service Impl
         response.setStatus("SUCCESS");
         response.setStatusCode(AppConstants.OK);
         response.setMessage("Employee Updated Success");
-        response.setData(this.mapper.map(employee, EmployeeDto.class));
+        response.setData(this.mapper.map(saved, EmployeeDto.class));
         response.setResponse_message("Execution process Completed");
         return response;
     }
@@ -100,7 +98,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Response deleteEmployee(Long id) {
         log.info("Delete employee triggered in service impl");
         Employee employee = this.employeeRepository.findById(id)
-                .orElseThrow(()-> new NoEmployeeExist("No employee exist with given Id"+id));
+                .orElseThrow(()-> new NoDataExist("No employee exist with given Id"+id));
         response.setStatus("SUCCESS");
         response.setStatusCode(AppConstants.OK);
         response.setMessage("Employee Deletion Success");
@@ -115,7 +113,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         log.info("Get all employee triggered in service Impl");
         List<Employee> employees = this.employeeRepository.findAll();
         if(employees == null){
-            throw new NoEmployeeExist("No employee has registered please register first");
+            throw new NoDataExist("No employee has registered please register first");
         }
         response.setStatus("SUCCESS");
         response.setStatusCode(AppConstants.OK);
@@ -130,7 +128,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Response getEmployeeById(Long id) {
         log.info("Get Employee by id triggered in service Impl");
         Employee employee = this.employeeRepository.findById(id)
-                .orElseThrow(()-> new NoEmployeeExist("No employee exist with the given Id"));
+                .orElseThrow(()-> new NoDataExist("No employee exist with the given Id"));
 
         response.setStatus("SUCCESS");
         response.setStatusCode(AppConstants.OK);

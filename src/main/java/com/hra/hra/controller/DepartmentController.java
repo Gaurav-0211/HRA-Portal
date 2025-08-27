@@ -40,9 +40,9 @@ public class DepartmentController {
     }
 
     // PUT Request to update an existing department
-    @PutMapping("/updateDepartment")
-    ResponseEntity<Response> updateDept(@RequestBody DepartmentDto departmentDto){
-        Response response = this.service.updateDepartment(departmentDto);
+    @PutMapping("/updateDepartment/{id}")
+    ResponseEntity<Response> updateDept(@PathVariable Long id,@RequestBody DepartmentDto departmentDto){
+        Response response = this.service.updateDepartment(id,departmentDto);
 
         return ResponseEntity.ok(response);
     }

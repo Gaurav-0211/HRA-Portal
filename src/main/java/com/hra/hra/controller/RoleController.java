@@ -25,9 +25,9 @@ public class RoleController {
     }
 
     // PUT Request to update an existing Role
-    @PutMapping("/updateRole")
-    ResponseEntity<Response> updateRole(@RequestBody RoleDto roleDto){
-        Response response = this.roleService.updateRole(roleDto);
+    @PutMapping("/updateRole/{id}")
+    ResponseEntity<Response> updateRole(@PathVariable Long id, @RequestBody RoleDto roleDto){
+        Response response = this.roleService.updateRole(id, roleDto);
 
         return ResponseEntity.ok(response);
     }

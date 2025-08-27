@@ -9,7 +9,7 @@ public interface EmployeeService {
 
     Response register(EmployeeDto employeeDto);
 
-    Response update(EmployeeDto employeeDto);
+    Response update(Long id,EmployeeDto employeeDto);
 
     Response deleteEmployee(Long id);
 

@@ -7,7 +7,7 @@ import com.hra.hra.dto.LeaveDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Employee;
 import com.hra.hra.entity.Leave;
-import com.hra.hra.exception.NoEmployeeExist;
+import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.exception.NoLeaveExist;
 import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.repository.LeaveRepository;
@@ -39,7 +39,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public Response applyLeave(Long employeeId, LeaveApplyRequestDto leaveDto) {
         Employee employee = this.employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new NoEmployeeExist("Employee not found"));
+                .orElseThrow(() -> new NoDataExist("Employee not found"));
 
         Leave leave = this.mapper.map(leaveDto, Leave.class);
 
