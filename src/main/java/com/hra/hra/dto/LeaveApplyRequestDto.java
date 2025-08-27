@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-
+// This DTO will be used by employee while applying leave
 @Getter
 @Setter
 @NoArgsConstructor

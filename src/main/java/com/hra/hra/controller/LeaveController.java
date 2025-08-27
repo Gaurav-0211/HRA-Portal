@@ -3,7 +3,6 @@ package com.hra.hra.controller;
 
 import com.hra.hra.dto.LeaveApplyRequestDto;
 import com.hra.hra.dto.LeaveDecisionRequestDto;
-import com.hra.hra.dto.LeaveDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.LeaveService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-
+// This DTO will be given as result when anyone try to fetch their leave
 @Getter
 @Setter
 @NoArgsConstructor

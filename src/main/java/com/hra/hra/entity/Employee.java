@@ -38,14 +38,17 @@ public class Employee {
 
     private LocalDateTime updatedAt;
 
+    // Many Employee can have same role
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
+    // Many employee can belong to same department
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
+    // One Employee can apply many leaves
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Leave> leaves = new ArrayList<>();
 

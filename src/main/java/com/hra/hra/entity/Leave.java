@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @Entity
-@Table
+@Table(name = "leaves")
 public class Leave {
 
     @Id
@@ -41,7 +41,7 @@ public class Leave {
     @Column(nullable = false)
     private LeaveType type; // CASUAL, SICK
 
-    // Mapping to each leave will belong to an employee
+    // Many Leave can belong to single employee
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
