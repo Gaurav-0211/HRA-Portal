@@ -62,4 +62,7 @@ public class EmployeeDto {
     // To get List of project done/working by an employee
     private Set<ProjectDto> projects;
 
+    // To get Set of products
+    private Set<Long> productIds;
+
 }

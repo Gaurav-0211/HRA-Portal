@@ -75,4 +75,13 @@ public class Employee {
         project.getEmployees().remove(this);
     }
 
+    // Many-to-Many with Product Entity
+    @ManyToMany
+    @JoinTable(
+            name = "employee_products",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> products = new HashSet<>();
+
 }
