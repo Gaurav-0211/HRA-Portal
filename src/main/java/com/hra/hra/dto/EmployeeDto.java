@@ -60,7 +60,6 @@ public class EmployeeDto {
     private List<LeaveDto> leaves;
 
     // To get List of project done/working by an employee
-    // Not used projectDto to save program from infinite loop
     private Set<ProjectDto> projects;
 
 }

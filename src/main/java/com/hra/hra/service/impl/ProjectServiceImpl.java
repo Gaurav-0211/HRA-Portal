@@ -1,6 +1,7 @@
 package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
+import com.hra.hra.dto.EmployeeDto;
 import com.hra.hra.dto.ProjectDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Employee;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +41,7 @@ public class ProjectServiceImpl implements ProjectService {
         log.info("Add project service Impl triggered");
         Project project = this.mapper.map(projectDto, Project.class);
         this.projectRepository.save(project);
+
         response.setStatus("SUCCESS");
         response.setMessage("Project created successfully");
         response.setData(this.mapper.map(project, ProjectDto.class));
@@ -57,13 +60,12 @@ public class ProjectServiceImpl implements ProjectService {
         Employee employee = this.employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoDataExist("Employee not found"));
 
-        project.getEmployees().add(employee);
-
-        Project updated = this.projectRepository.save(project);
+        employee.addProject(project);
+        Employee updated = this.employeeRepository.save(employee);
 
         response.setStatus("SUCCESS");
         response.setMessage("Project assigned to employee successfully");
-        response.setData(this.mapper.map(updated, ProjectDto.class));
+        response.setData(this.mapper.map(updated, EmployeeDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
         return response;
@@ -79,13 +81,12 @@ public class ProjectServiceImpl implements ProjectService {
         Employee employee = this.employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoDataExist("Employee not found"));
 
-        project.getEmployees().remove(employee);
-
-        Project updated = this.projectRepository.save(project);
+        employee.removeProject(project);
+        Employee updated = this.employeeRepository.save(employee);
 
         response.setStatus("SUCCESS");
         response.setMessage("Project removed from employee");
-        response.setData(this.mapper.map(updated, ProjectDto.class));
+        response.setData(this.mapper.map(updated, EmployeeDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
         return response;
@@ -99,13 +100,16 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = this.projectRepository.findById(projectId)
                 .orElseThrow(() -> new NoDataExist("Project not found"));
 
+        ProjectDto projectDto = this.mapper.map(project, ProjectDto.class);
+
         response.setStatus("SUCCESS");
         response.setMessage("Project fetched success");
-        response.setData(this.mapper.map(project, ProjectDto.class));
+        response.setData(projectDto);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
         return response;
     }
+
 
     // APiI to get all projects
     @Override

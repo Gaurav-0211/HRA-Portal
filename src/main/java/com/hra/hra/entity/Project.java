@@ -1,5 +1,6 @@
 package com.hra.hra.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,5 +37,7 @@ public class Project {
     private String status;
 
     @ManyToMany(mappedBy = "projects", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Set<Employee> employees = new HashSet<>();
+
 }

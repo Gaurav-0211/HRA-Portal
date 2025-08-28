@@ -31,6 +31,5 @@ public class ProjectDto {
     @NotEmpty(message = "Status cannot be blank")
     private String status;
 
-    private Set<Long> employeeIds;
 
 }

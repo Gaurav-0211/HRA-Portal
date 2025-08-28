@@ -1,5 +1,6 @@
 package com.hra.hra.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -55,13 +56,23 @@ public class Employee {
     private List<Leave> leaves = new ArrayList<>();
 
     // Many employee can work on multiple project
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "employee_project",
             joinColumns = @JoinColumn(name = "employee_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id")
     )
+    @JsonManagedReference
     private Set<Project> projects = new HashSet<>();
 
+    public void addProject(Project project) {
+        this.projects.add(project);
+        project.getEmployees().add(this); // maintain both sides mappings
+    }
+
+    public void removeProject(Project project) {
+        this.projects.remove(project);
+        project.getEmployees().remove(this);
+    }
 
 }
