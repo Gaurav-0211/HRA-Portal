@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 
 @AllArgsConstructor
@@ -57,5 +58,9 @@ public class EmployeeDto {
 
     // To get List of leave applied by an employee
     private List<LeaveDto> leaves;
+
+    // To get List of project done/working by an employee
+    // Not used projectDto to save program from infinite loop
+    private Set<ProjectDto> projects;
 
 }

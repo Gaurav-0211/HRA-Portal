@@ -35,7 +35,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Autowired
     private Response response;
 
-    // API to apply Leave with employee Id
+    // API to apply Leave with employee ID
     @Override
     public Response applyLeave(Long employeeId, LeaveApplyRequestDto leaveDto) {
         Employee employee = this.employeeRepository.findById(employeeId)
