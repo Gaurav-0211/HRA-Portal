@@ -1,5 +1,6 @@
 package com.hra.hra.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,6 @@ public class ProductDto {
 
     private LocalDate launchDate;
 
-    private Set<Long> employeeIds;
+    @JsonIgnoreProperties("products")
+    private Set<EmployeeDto> employees;
 }

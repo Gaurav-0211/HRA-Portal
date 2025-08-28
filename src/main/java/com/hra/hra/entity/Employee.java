@@ -1,5 +1,6 @@
 package com.hra.hra.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -82,6 +83,7 @@ public class Employee {
             joinColumns = @JoinColumn(name = "employee_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
+    @JsonIgnore
     private Set<Product> products = new HashSet<>();
 
 }

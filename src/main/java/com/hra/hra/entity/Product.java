@@ -1,5 +1,6 @@
 package com.hra.hra.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,5 +34,6 @@ public class Product {
     private String description;
 
     @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Employee> employees = new HashSet<>();
 }

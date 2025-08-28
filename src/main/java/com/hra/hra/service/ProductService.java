@@ -13,4 +13,8 @@ public interface ProductService {
 
     Response updateProduct(Long id, ProductDto productDto);
 
+    Response assignProductToEmployee(Long productId, Long employeeId);
+
+    Response removeProductFromEmployee(Long productId, Long employeeId);
+
 }

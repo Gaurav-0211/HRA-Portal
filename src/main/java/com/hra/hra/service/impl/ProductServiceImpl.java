@@ -1,10 +1,13 @@
 package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
+import com.hra.hra.dto.EmployeeDto;
 import com.hra.hra.dto.ProductDto;
 import com.hra.hra.dto.Response;
+import com.hra.hra.entity.Employee;
 import com.hra.hra.entity.Product;
 import com.hra.hra.exception.NoDataExist;
+import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.repository.ProductRepository;
 import com.hra.hra.service.ProductService;
 import org.modelmapper.ModelMapper;
@@ -25,6 +28,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private Response response;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     // API to add a new Product
     @Override
@@ -85,6 +91,55 @@ public class ProductServiceImpl implements ProductService {
         response.setMessage("Product updated success");
         response.setData(this.mapper.map(saved, ProductDto.class));
         response.setStatusCode(AppConstants.CREATED);
+        response.setResponse_message("Process Executed success");
+
+        return response;
+    }
+
+    // API to assign product to an employee
+    @Override
+    public Response assignProductToEmployee(Long productId, Long employeeId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NoDataExist("Product not found with id: " + productId));
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new NoDataExist("Employee not found with id: " + employeeId));
+
+        // Add mapping
+        product.getEmployees().add(employee);
+        employee.getProducts().add(product);
+
+        this.productRepository.save(product); // persist relationship
+        Employee saved = this.employeeRepository.save(employee);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Product assigned success");
+        response.setData(this.mapper.map(saved, EmployeeDto.class));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Process Executed success");
+
+        return response;
+    }
+
+    @Override
+    public Response removeProductFromEmployee(Long productId, Long employeeId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NoDataExist("Product not found with id: " + productId));
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new NoDataExist("Employee not found with id: " + employeeId));
+
+        // Remove mapping
+        product.getEmployees().remove(employee);
+        employee.getProducts().remove(product);
+
+        productRepository.save(product);
+        Employee saved = employeeRepository.save(employee);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Product removed success");
+        response.setData(this.mapper.map(saved, EmployeeDto.class));
+        response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Executed success");
 
         return response;

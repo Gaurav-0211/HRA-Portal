@@ -1,6 +1,7 @@
 package com.hra.hra.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -63,6 +64,7 @@ public class EmployeeDto {
     private Set<ProjectDto> projects;
 
     // To get Set of products
-    private Set<Long> productIds;
+    @JsonIgnoreProperties("employees")
+    private Set<ProductDto> products;
 
 }
