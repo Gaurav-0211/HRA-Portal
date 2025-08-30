@@ -11,5 +11,5 @@ public interface HolidayService {
 
     Response deleteHoliday(Long id);
 
-    Response getAllHoliday();
+    Response getAllHoliday(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 }

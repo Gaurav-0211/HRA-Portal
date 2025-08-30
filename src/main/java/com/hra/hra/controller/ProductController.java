@@ -1,5 +1,6 @@
 package com.hra.hra.controller;
 
+import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.ProductDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.ProductService;
@@ -27,10 +28,15 @@ public class ProductController {
 
     // GET Request to fetch all product
     @GetMapping("/getAllProduct")
-    public ResponseEntity<Response> getAllProduct(){
+    public ResponseEntity<Response> getAllProduct(
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+    ){
         log.info("Get all product in controller");
 
-        Response response = this.productService.getAllProduct();
+        Response response = this.productService.getAllProduct(pageNumber, pageSize, sortBy, sortDir);
         log.info("Get all product in controller executed");
 
         return ResponseEntity.ok(response);

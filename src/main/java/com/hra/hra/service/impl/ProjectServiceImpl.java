@@ -2,6 +2,7 @@ package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.EmployeeDto;
+import com.hra.hra.dto.PageResponse;
 import com.hra.hra.dto.ProjectDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Employee;
@@ -13,6 +14,10 @@ import com.hra.hra.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -120,16 +125,38 @@ public class ProjectServiceImpl implements ProjectService {
 
     // APiI to get all projects
     @Override
-    public Response getAllProjects() {
+    public Response getAllProjects(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         log.info("Get all projects service Impl");
-        List<Project> projects = this.projectRepository.findAll();
+        Sort sort = sortDir != null && sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Project> projectPage = this.projectRepository.findAll(pageable);
+
+        List<ProjectDto> projectDtoList = projectPage
+                .getContent()
+                .stream()
+                .map(project -> mapper.map(project, ProjectDto.class))
+                .collect(Collectors.toList());
+
+        log.info("All Projects converted into pages in project service impl");
+
+        PageResponse<ProjectDto> obj = PageResponse.<ProjectDto>builder()
+                .content(projectDtoList)
+                .pageNumber(projectPage.getNumber())
+                .pageSize(projectPage.getSize())
+                .totalElements(projectPage.getTotalElements())
+                .totalPage(projectPage.getTotalPages())
+                .lastPage(projectPage.isLast())
+                .build();
 
         response.setStatus("SUCCESS");
-        response.setMessage("All Project fetched success");
-        response.setData(projects.stream().map((p)->this.mapper.map(p, ProjectDto.class)).collect(Collectors.toList()));
+        response.setMessage("All Projects fetched successfully");
+        response.setData(obj);
         response.setStatusCode(AppConstants.OK);
-        response.setResponse_message("Process executed completed");
-        log.info("Get all projects service Impl executed");
+        response.setResponse_message("Execution process completed");
+        log.info("Get all projects in service Impl executed");
 
         return response;
     }

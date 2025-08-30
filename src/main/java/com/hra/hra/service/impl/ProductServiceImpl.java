@@ -2,6 +2,7 @@ package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.EmployeeDto;
+import com.hra.hra.dto.PageResponse;
 import com.hra.hra.dto.ProductDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Employee;
@@ -13,6 +14,10 @@ import com.hra.hra.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,20 +57,42 @@ public class ProductServiceImpl implements ProductService {
 
     // Get api to fetch all products
     @Override
-    public Response getAllProduct() {
+    public Response getAllProduct(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         log.info("Get all product in service impl");
 
-        List<Product> products = this.productRepository.findAll();
+        Sort sort = sortDir != null && sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Product> productPage = this.productRepository.findAll(pageable);
+
+        List<ProductDto> productDtoList = productPage
+                .getContent()
+                .stream()
+                .map(product -> mapper.map(product, ProductDto.class))
+                .collect(Collectors.toList());
+
+        log.info("All Products converted into pages in product service impl");
+
+        PageResponse<ProductDto> obj = PageResponse.<ProductDto>builder()
+                .content(productDtoList)
+                .pageNumber(productPage.getNumber())
+                .pageSize(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPage(productPage.getTotalPages())
+                .lastPage(productPage.isLast())
+                .build();
 
         response.setStatus("SUCCESS");
-        response.setMessage("All Products fetched success");
-        response.setData(products.stream().map((p)-> this.mapper.map(p, ProductDto.class)).collect(Collectors.toList()));
+        response.setMessage("All Products fetched successfully");
+        response.setData(obj);
         response.setStatusCode(AppConstants.OK);
-        response.setResponse_message("Process Executed success");
-
-        log.info("Get all product in service impl executed");
+        response.setResponse_message("Execution process completed");
+        log.info("Get all products in service Impl executed");
 
         return response;
+
     }
 
     // API to delete an existing project

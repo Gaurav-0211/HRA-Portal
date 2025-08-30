@@ -69,7 +69,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .collect(Collectors.toList());
 
         log.info("All Department converted into pages in department service impl");
-        Object obj = PageResponse.builder()
+        PageResponse<DepartmentDto> obj = PageResponse.<DepartmentDto>builder()
                 .content(departmentDtos)
                 .pageNumber(departmentPage.getNumber())
                 .pageSize(departmentPage.getSize())
@@ -77,7 +77,6 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .totalPage(departmentPage.getTotalPages())
                 .lastPage(departmentPage.isLast())
                 .build();
-
 
         response.setStatus("SUCCESS");
         response.setMessage("All Department fetched successfully");

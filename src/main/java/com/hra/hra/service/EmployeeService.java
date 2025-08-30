@@ -13,7 +13,7 @@ public interface EmployeeService {
 
     Response deleteEmployee(Long id);
 
-    Response getAllEmployee();
+    Response getAllEmployee(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
     Response getEmployeeById(Long id);
 

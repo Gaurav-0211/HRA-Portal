@@ -15,7 +15,7 @@ public interface SupportService {
 
     Response getSupportByEmployeeId(Long employeeId); // all queries by an employee
 
-    Response getAllSupports();
+    Response getAllSupports(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
     Response handleSupportResolved(Long id);
 

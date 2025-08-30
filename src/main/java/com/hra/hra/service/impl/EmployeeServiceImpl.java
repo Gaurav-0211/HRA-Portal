@@ -2,6 +2,7 @@ package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.EmployeeDto;
+import com.hra.hra.dto.PageResponse;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Department;
 import com.hra.hra.entity.Employee;
@@ -16,6 +17,10 @@ import com.hra.hra.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -112,17 +117,37 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     // API to get all employee
     @Override
-    public Response getAllEmployee() {
+    public Response getAllEmployee(Integer pageNumber, Integer pageSize, String sortBy, String sortDir)
+    {
         log.info("Get all employee triggered in service Impl");
-        List<Employee> employees = this.employeeRepository.findAll();
-        if(employees == null){
-            throw new NoDataExist("No employee has registered please register first");
-        }
+        Sort sort = sortDir != null && sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Employee> employeePage = this.employeeRepository.findAll(pageable);
+
+        List<EmployeeDto> employeeDtoList = employeePage
+                .getContent()
+                .stream()
+                .map(emp -> mapper.map(emp, EmployeeDto.class))
+                .collect(Collectors.toList());
+
+        log.info("All Employee converted into pages in employee service impl");
+        PageResponse<EmployeeDto> obj = PageResponse.<EmployeeDto>builder()
+                .content(employeeDtoList)
+                .pageNumber(employeePage.getNumber())
+                .pageSize(employeePage.getSize())
+                .totalElements(employeePage.getTotalElements())
+                .totalPage(employeePage.getTotalPages())
+                .lastPage(employeePage.isLast())
+                .build();
+
         response.setStatus("SUCCESS");
+        response.setMessage("All Department fetched successfully");
+        response.setData(obj);
         response.setStatusCode(AppConstants.OK);
-        response.setMessage("All Employee Fetched Success");
-        response.setData(employees.stream().map((emp) -> this.mapper.map(emp, EmployeeDto.class)).collect(Collectors.toList()));
-        response.setResponse_message("Process execution completed");
+        response.setResponse_message("Execution process completed");
         log.info("Get all employee in service Impl executed");
 
         return response;

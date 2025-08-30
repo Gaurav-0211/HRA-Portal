@@ -1,6 +1,7 @@
 package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
+import com.hra.hra.dto.PageResponse;
 import com.hra.hra.dto.Response;
 import com.hra.hra.dto.SupportDto;
 import com.hra.hra.entity.Employee;
@@ -12,7 +13,13 @@ import com.hra.hra.service.SupportService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.stream.Collectors;
 @Slf4j
 @Service
@@ -117,25 +124,41 @@ public class SupportServiceImpl implements SupportService {
 
     // API to get all support raised by all employee
     @Override
-    public Response getAllSupports() {
+    public Response getAllSupports(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         log.info("Get all Support in service impl triggered");
-        Object data =  this.supportRepository.findAll()
+        Sort sort = sortDir != null && sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Support> supportPage = this.supportRepository.findAll(pageable);
+
+        List<SupportDto> supportDtoList = supportPage
+                .getContent()
                 .stream()
-                .map(s -> {
-                    SupportDto dto = this.mapper.map(s, SupportDto.class);
-                    dto.setEmployeeId(s.getEmployee().getId());
-                    return dto;
-                })
+                .map(support -> mapper.map(support, SupportDto.class))
                 .collect(Collectors.toList());
 
+        log.info("All Supports converted into pages in support service impl");
+
+        PageResponse<SupportDto> obj = PageResponse.<SupportDto>builder()
+                .content(supportDtoList)
+                .pageNumber(supportPage.getNumber())
+                .pageSize(supportPage.getSize())
+                .totalElements(supportPage.getTotalElements())
+                .totalPage(supportPage.getTotalPages())
+                .lastPage(supportPage.isLast())
+                .build();
+
         response.setStatus("SUCCESS");
-        response.setMessage("Query fetched successfully");
-        response.setData(data);
+        response.setMessage("All Supports fetched successfully");
+        response.setData(obj);
         response.setStatusCode(AppConstants.OK);
-        response.setResponse_message("Process execution success");
-        log.info("Get all Support in service impl executed");
+        response.setResponse_message("Execution process completed");
+        log.info("Get all supports in service Impl executed");
 
         return response;
+
     }
 
     // API to handle support added by HR/Manager

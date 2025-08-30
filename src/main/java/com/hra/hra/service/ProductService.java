@@ -7,7 +7,7 @@ public interface ProductService {
 
     Response addProduct(ProductDto productDto);
 
-    Response getAllProduct();
+    Response getAllProduct(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
     Response deleteProduct(Long id);
 

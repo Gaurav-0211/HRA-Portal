@@ -1,5 +1,6 @@
 package com.hra.hra.controller;
 
+import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.Response;
 import com.hra.hra.dto.SupportDto;
 import com.hra.hra.service.SupportService;
@@ -49,9 +50,14 @@ public class SupportController {
 
     // GET request to get all query raised by all employee
     @GetMapping("/getAllQuery")
-    public ResponseEntity<Response> getAllQuery(){
+    public ResponseEntity<Response> getAllQuery(
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+    ){
         log.info("Get all query in support controller");
-        Response response = this.supportService.getAllSupports();
+        Response response = this.supportService.getAllSupports(pageNumber, pageSize, sortBy, sortDir);
         log.info("Get all query in support controller executed");
 
         return ResponseEntity.ok(response);

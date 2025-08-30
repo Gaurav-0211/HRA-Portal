@@ -1,5 +1,6 @@
 package com.hra.hra.controller;
 
+import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.ProjectDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.ProjectService;
@@ -61,9 +62,14 @@ public class ProjectController {
 
     // GET Request to fetch all project
     @GetMapping("/getAll")
-    public ResponseEntity<Response> getAllProject(){
+    public ResponseEntity<Response> getAllProject(
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+    ){
         log.info("Get All project in controller");
-        Response response = this.projectService.getAllProjects();
+        Response response = this.projectService.getAllProjects(pageNumber, pageSize, sortBy, sortDir);
         log.info("Get all project in controller executed");
 
         return ResponseEntity.ok(response);
