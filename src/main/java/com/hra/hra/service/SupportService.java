@@ -17,4 +17,8 @@ public interface SupportService {
 
     Response getAllSupports();
 
+    Response handleSupportResolved(Long id);
+
+    Response handleSupportInProgress(Long id);
+
 }

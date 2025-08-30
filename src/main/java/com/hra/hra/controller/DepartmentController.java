@@ -1,5 +1,6 @@
 package com.hra.hra.controller;
 
+import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.DepartmentDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.DepartmentService;
@@ -26,9 +27,14 @@ public class DepartmentController {
 
     // GET Request to fetch all departments
     @GetMapping("/getDepartments")
-    public ResponseEntity<Response> getAllDepartment(){
+    public ResponseEntity<Response> getAllDepartment(
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+    ){
         log.info("Get all department in controller");
-        Response response = this.service.getAllDepartment();
+        Response response = this.service.getAllDepartment(pageNumber,pageSize,sortBy,sortDir);
 
         return ResponseEntity.ok(response);
     }
@@ -47,6 +53,16 @@ public class DepartmentController {
     ResponseEntity<Response> updateDept(@PathVariable Long id,@RequestBody DepartmentDto departmentDto){
         log.info("update department in controller");
         Response response = this.service.updateDepartment(id,departmentDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // GET request to fetch a single department by ID
+    @GetMapping("/getByDepartmentId/{id}")
+    public  ResponseEntity<Response> getById(@PathVariable Long id){
+        log.info("Get Department by id in controller");
+        Response response = this.service.getDepartmentById(id);
+        log.info("Get Department by id in controller executed");
 
         return ResponseEntity.ok(response);
     }

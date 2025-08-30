@@ -57,12 +57,33 @@ public class SupportController {
         return ResponseEntity.ok(response);
     }
 
+    // DELETE request to delete a query
     @DeleteMapping("/deleteQuery/{id}")
     public ResponseEntity<Response> deleteQuery(@PathVariable Long id){
         log.info("Delete query in support controller");
 
         Response response = this.supportService.deleteQuery(id);
         log.info("Delete query in support controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    // POST request to resolve raised query by HR/manager
+    @PostMapping("/resolveQueryId/{id}")
+    public ResponseEntity<Response> resolveQuery(@PathVariable Long id){
+        log.info("Resolve query in controller");
+        Response response = this.supportService.handleSupportResolved(id);
+        log.info("Resolve query in controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    // POST request to mark a query in-Progress by HR/Manager
+    @PostMapping("/inProgressQueryId/{id}")
+    public ResponseEntity<Response> inProgressQuery(@PathVariable Long id){
+        log.info("Mark in progress Query in controller");
+        Response response = this.supportService.handleSupportInProgress(id);
+        log.info("Mark in progress Query in controller executed");
 
         return ResponseEntity.ok(response);
     }

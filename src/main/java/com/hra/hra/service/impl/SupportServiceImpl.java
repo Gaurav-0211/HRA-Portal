@@ -137,4 +137,43 @@ public class SupportServiceImpl implements SupportService {
 
         return response;
     }
+
+    // API to handle support added by HR/Manager
+    @Override
+    public Response handleSupportResolved(Long id) {
+        log.info("Resolve Query in support service Impl triggered");
+        Support support = this.supportRepository.findById(id)
+                .orElseThrow(()->new NoDataExist("No query found with given id"));
+        support.setStatus("RESOLVED");
+        Support saved = this.supportRepository.save(support);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Query resolved successfully");
+        response.setData(this.mapper.map(saved, SupportDto.class));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Process execution success");
+        log.info("Resolve Query in support service Impl executed");
+
+        return response;
+    }
+
+    // API to mark a request In Progress by HR/Manager
+    @Override
+    public Response handleSupportInProgress(Long id) {
+        log.info("Mark  Query in-progress in support service Impl triggered");
+        Support support = this.supportRepository.findById(id)
+                .orElseThrow(()-> new NoDataExist("No Query found with given Id"));
+
+        support.setStatus("IN_PROGRESS");
+        Support saved = this.supportRepository.save(support);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Query marked in-progress successfully");
+        response.setData(this.mapper.map(saved, SupportDto.class));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Process execution success");
+        log.info("Mark Query in-progress in support service Impl executed");
+
+        return response;
+    }
 }
