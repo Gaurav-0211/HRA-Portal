@@ -46,6 +46,8 @@ public class ProjectServiceImpl implements ProjectService {
         response.setData(this.mapper.map(project, ProjectDto.class));
         response.setStatusCode(AppConstants.CREATED);
         response.setResponse_message("Process executed completed");
+        log.info("Add project service Impl executed");
+
         return response;
     }
 
@@ -67,6 +69,8 @@ public class ProjectServiceImpl implements ProjectService {
         response.setData(this.mapper.map(updated, EmployeeDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
+        log.info("Assign project to employee service impl executed");
+
         return response;
     }
 
@@ -88,6 +92,8 @@ public class ProjectServiceImpl implements ProjectService {
         response.setData(this.mapper.map(updated, EmployeeDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
+        log.info("Remove project from an employee service Impl executed");
+
         return response;
 
     }
@@ -106,6 +112,8 @@ public class ProjectServiceImpl implements ProjectService {
         response.setData(projectDto);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
+        log.info("Get project by id project service Impl executed");
+
         return response;
     }
 
@@ -121,6 +129,8 @@ public class ProjectServiceImpl implements ProjectService {
         response.setData(projects.stream().map((p)->this.mapper.map(p, ProjectDto.class)).collect(Collectors.toList()));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
+        log.info("Get all projects service Impl executed");
+
         return response;
     }
 
@@ -138,6 +148,8 @@ public class ProjectServiceImpl implements ProjectService {
         response.setData(this.mapper.map(saved, ProjectDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
+        log.info("update an existing project service Impl executed");
+
         return response;
     }
 
@@ -154,6 +166,8 @@ public class ProjectServiceImpl implements ProjectService {
         response.setData(null);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process executed completed");
+        log.info("Deleted an existing project service impl executed");
+
         return response;
     }
 }

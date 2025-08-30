@@ -90,6 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setMessage("Employee Updated Success");
         response.setData(this.mapper.map(saved, EmployeeDto.class));
         response.setResponse_message("Execution process Completed");
+        log.info("Update employee in service Impl executed");
         return response;
     }
 
@@ -104,6 +105,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setMessage("Employee Deletion Success");
         response.setData(this.mapper.map(employee, EmployeeDto.class));
         response.setResponse_message("Execution process completed");
+        log.info("Delete employee in service impl executed");
+
         return response;
     }
 
@@ -120,6 +123,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setMessage("All Employee Fetched Success");
         response.setData(employees.stream().map((emp) -> this.mapper.map(emp, EmployeeDto.class)).collect(Collectors.toList()));
         response.setResponse_message("Process execution completed");
+        log.info("Get all employee in service Impl executed");
+
         return response;
     }
 
@@ -135,6 +140,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setMessage("Employee Fetched Success");
         response.setData(this.mapper.map(employee, EmployeeDto.class));
         response.setResponse_message("Process execution completed");
+        log.info("Get Employee by id in service Impl executed");
+
         return response;
     }
 }

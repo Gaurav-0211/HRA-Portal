@@ -10,13 +10,14 @@ import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.repository.ProductRepository;
 import com.hra.hra.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -35,6 +36,7 @@ public class ProductServiceImpl implements ProductService {
     // API to add a new Product
     @Override
     public Response addProduct(ProductDto productDto) {
+        log.info("Add product in service impl");
         Product product = this.mapper.map(productDto, Product.class);
         this.productRepository.save(product);
 
@@ -43,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
         response.setData(this.mapper.map(product, ProductDto.class));
         response.setStatusCode(AppConstants.CREATED);
         response.setResponse_message("Process Executed success");
+        log.info("Add product in service impl executed");
 
         return response;
     }
@@ -50,6 +53,8 @@ public class ProductServiceImpl implements ProductService {
     // Get api to fetch all products
     @Override
     public Response getAllProduct() {
+        log.info("Get all product in service impl");
+
         List<Product> products = this.productRepository.findAll();
 
         response.setStatus("SUCCESS");
@@ -58,12 +63,16 @@ public class ProductServiceImpl implements ProductService {
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Executed success");
 
+        log.info("Get all product in service impl executed");
+
         return response;
     }
 
     // API to delete an existing project
     @Override
     public Response deleteProduct(Long id) {
+        log.info("Delete product in service impl");
+
         Product product = this.productRepository.findById(id)
                 .orElseThrow(()-> new NoDataExist("No product found with given ID "+id));
 
@@ -74,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
         response.setData(null);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Executed success");
+        log.info("Delete product in service impl executed");
 
         return response;
     }
@@ -81,6 +91,8 @@ public class ProductServiceImpl implements ProductService {
     // API to update an existing product
     @Override
     public Response updateProduct(Long id, ProductDto productDto) {
+        log.info("Update product in service impl");
+
         Product product = this.productRepository.findById(id)
                 .orElseThrow(()-> new NoDataExist("No Product found with given Id "+id));
 
@@ -92,6 +104,8 @@ public class ProductServiceImpl implements ProductService {
         response.setData(this.mapper.map(saved, ProductDto.class));
         response.setStatusCode(AppConstants.CREATED);
         response.setResponse_message("Process Executed success");
+        log.info("Update product in service impl executed");
+
 
         return response;
     }
@@ -99,6 +113,8 @@ public class ProductServiceImpl implements ProductService {
     // API to assign product to an employee
     @Override
     public Response assignProductToEmployee(Long productId, Long employeeId) {
+        log.info("Assign product to employee product in service impl");
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoDataExist("Product not found with id: " + productId));
 
@@ -117,12 +133,14 @@ public class ProductServiceImpl implements ProductService {
         response.setData(this.mapper.map(saved, EmployeeDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Executed success");
+        log.info("Assign product to employee product in service impl executed");
 
         return response;
     }
 
     @Override
     public Response removeProductFromEmployee(Long productId, Long employeeId) {
+        log.info("Remove product to employee product in service impl");
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoDataExist("Product not found with id: " + productId));
 
@@ -141,6 +159,7 @@ public class ProductServiceImpl implements ProductService {
         response.setData(this.mapper.map(saved, EmployeeDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Executed success");
+        log.info("Remove product to employee product in service impl executed");
 
         return response;
     }

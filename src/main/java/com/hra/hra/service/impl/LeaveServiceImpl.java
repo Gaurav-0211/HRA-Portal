@@ -12,6 +12,7 @@ import com.hra.hra.exception.NoLeaveExist;
 import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.repository.LeaveRepository;
 import com.hra.hra.service.LeaveService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class LeaveServiceImpl implements LeaveService {
 
@@ -38,6 +39,7 @@ public class LeaveServiceImpl implements LeaveService {
     // API to apply Leave with employee ID
     @Override
     public Response applyLeave(Long employeeId, LeaveApplyRequestDto leaveDto) {
+        log.info("Apply leave in service impl triggered");
         Employee employee = this.employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoDataExist("Employee not found"));
 
@@ -56,12 +58,16 @@ public class LeaveServiceImpl implements LeaveService {
         response.setData(mapper.map(savedLeave, LeaveDto.class));
         response.setStatusCode(AppConstants.CREATED);
         response.setResponse_message("Process Execution success");
+        log.info("Apply leave in service impl executed");
+
         return response;
     }
 
     // API to approve leave By other authority(HR, Manager)
     @Override
     public Response approveLeave(Long leaveId) {
+        log.info("Approve leave in service impl triggered");
+
         Leave leave = this.leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new NoLeaveExist("Leave not found"));
 
@@ -73,6 +79,7 @@ public class LeaveServiceImpl implements LeaveService {
         response.setData(mapper.map(this.leaveRepository.save(leave), LeaveDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Execution success");
+        log.info("Approve leave in service impl executed");
 
         return response;
     }
@@ -80,6 +87,8 @@ public class LeaveServiceImpl implements LeaveService {
     // API to reject Leave by authorize person (HR/Manager)
     @Override
     public Response rejectLeave(Long leaveId, String reason) {
+        log.info("Reject leave in service impl triggered");
+
         Leave leave = this.leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new NoLeaveExist("Leave not found"));
 
@@ -92,6 +101,7 @@ public class LeaveServiceImpl implements LeaveService {
         response.setData(mapper.map(this.leaveRepository.save(leave), LeaveDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Execution success");
+        log.info("Reject leave in service impl executed");
 
         return response;
     }
@@ -99,6 +109,8 @@ public class LeaveServiceImpl implements LeaveService {
     // API to get all leaves of an employee
     @Override
     public Response getLeavesByEmployee(Long employeeId) {
+        log.info("Get Leave by an employee in service impl triggered");
+
         List<Leave> leaves = this.leaveRepository.findByEmployeeId(employeeId);
 
         response.setStatus("SUCCESS");
@@ -106,6 +118,8 @@ public class LeaveServiceImpl implements LeaveService {
         response.setData(leaves.stream().map((l) -> mapper.map(l, LeaveDto.class)).collect(Collectors.toList()));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process Execution success");
+        log.info("Get Leave by an employee in service impl executed");
+
         return response;
     }
 

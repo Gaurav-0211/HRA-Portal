@@ -3,11 +3,12 @@ package com.hra.hra.controller;
 import com.hra.hra.dto.DepartmentDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.DepartmentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/departments")
 public class DepartmentController {
@@ -18,6 +19,7 @@ public class DepartmentController {
     // POST Request to add department
     @PostMapping("/addDepartment")
     public ResponseEntity<Response> addDepartment(@RequestBody DepartmentDto departmentDto){
+        log.info("Add new Department in controller");
         Response response = this.service.addDepartment(departmentDto);
         return ResponseEntity.ok(response);
     }
@@ -25,6 +27,7 @@ public class DepartmentController {
     // GET Request to fetch all departments
     @GetMapping("/getDepartments")
     public ResponseEntity<Response> getAllDepartment(){
+        log.info("Get all department in controller");
         Response response = this.service.getAllDepartment();
 
         return ResponseEntity.ok(response);
@@ -33,6 +36,7 @@ public class DepartmentController {
     // DELETE Request to delete a department
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Response> deleteDepartment(@PathVariable Long id){
+        log.info("delete department in controller");
         Response response = this.service.deleteDepartment(id);
 
         return ResponseEntity.ok(response);
@@ -41,6 +45,7 @@ public class DepartmentController {
     // PUT Request to update an existing department
     @PutMapping("/updateDepartment/{id}")
     ResponseEntity<Response> updateDept(@PathVariable Long id,@RequestBody DepartmentDto departmentDto){
+        log.info("update department in controller");
         Response response = this.service.updateDepartment(id,departmentDto);
 
         return ResponseEntity.ok(response);

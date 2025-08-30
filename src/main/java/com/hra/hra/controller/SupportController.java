@@ -3,10 +3,11 @@ package com.hra.hra.controller;
 import com.hra.hra.dto.Response;
 import com.hra.hra.dto.SupportDto;
 import com.hra.hra.service.SupportService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/supports")
 public class SupportController {
@@ -17,7 +18,9 @@ public class SupportController {
     //POST request to raise a new support query
     @PostMapping("/raiseQuery")
     public ResponseEntity<Response> raisedQuery(@RequestBody SupportDto supportDto){
+        log.info("Raise query in support controller");
         Response response = this.supportService.addQuery(supportDto);
+        log.info("Raise query in support controller executed");
 
         return ResponseEntity.ok(response);
     }
@@ -25,7 +28,10 @@ public class SupportController {
     // PUT request to update an existing query
     @PutMapping("/updateQuery/{id}")
     public ResponseEntity<Response> updateQuery(@PathVariable Long id, @RequestBody SupportDto supportDto){
+        log.info("Update query in support controller");
+
         Response response = this.supportService.updateQuery(id, supportDto);
+        log.info("Update query in support controller executed");
 
         return ResponseEntity.ok(response);
     }
@@ -33,7 +39,10 @@ public class SupportController {
     // GET request to fetch all query raised by an employee
     @GetMapping("/getQueryByEmployeeId/{id}")
     public ResponseEntity<Response> getQueryByEmpId(@PathVariable Long id){
+        log.info("Get query by employee Id in support controller");
+
         Response response = this.supportService.getSupportByEmployeeId(id);
+        log.info("Get query by employee Id in support controller executed");
 
         return ResponseEntity.ok(response);
     }
@@ -41,14 +50,19 @@ public class SupportController {
     // GET request to get all query raised by all employee
     @GetMapping("/getAllQuery")
     public ResponseEntity<Response> getAllQuery(){
+        log.info("Get all query in support controller");
         Response response = this.supportService.getAllSupports();
+        log.info("Get all query in support controller executed");
 
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/deleteQuery/{id}")
     public ResponseEntity<Response> deleteQuery(@PathVariable Long id){
+        log.info("Delete query in support controller");
+
         Response response = this.supportService.deleteQuery(id);
+        log.info("Delete query in support controller executed");
 
         return ResponseEntity.ok(response);
     }

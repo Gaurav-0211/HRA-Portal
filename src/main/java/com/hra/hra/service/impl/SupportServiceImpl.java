@@ -9,11 +9,12 @@ import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.repository.SupportRepository;
 import com.hra.hra.service.SupportService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class SupportServiceImpl implements SupportService {
 
@@ -32,6 +33,7 @@ public class SupportServiceImpl implements SupportService {
     // API to add a new Query
     @Override
     public Response addQuery(SupportDto supportDto) {
+        log.info("Add query in service impl triggered");
         Employee employee = this.employeeRepository.findById(supportDto.getEmployeeId())
                 .orElseThrow(() -> new NoDataExist("Employee not found"));
 
@@ -44,6 +46,7 @@ public class SupportServiceImpl implements SupportService {
         response.setData(this.mapper.map(saved, SupportDto.class));
         response.setStatusCode(AppConstants.CREATED);
         response.setResponse_message("Process execution success");
+        log.info("Add query in service impl executed");
 
         return response;
     }
@@ -51,6 +54,7 @@ public class SupportServiceImpl implements SupportService {
     // API to delete or remove a Query
     @Override
     public Response deleteQuery(Long id) {
+        log.info("Delete query in service impl triggered");
         Support support = this.supportRepository.findById(id)
                 .orElseThrow(()->new NoDataExist("No query found with given ID "+id));
 
@@ -61,6 +65,7 @@ public class SupportServiceImpl implements SupportService {
         response.setData(null);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process execution success");
+        log.info("delete query in service impl executed");
 
         return response;
     }
@@ -68,6 +73,7 @@ public class SupportServiceImpl implements SupportService {
     // API to update an existing support
     @Override
     public Response updateQuery(Long id, SupportDto supportDto) {
+        log.info("Update query in service impl triggered");
         Support support = this.supportRepository.findById(id)
                 .orElseThrow(() -> new NoDataExist("Support not found"));
         support.setIssueType(supportDto.getIssueType());
@@ -79,6 +85,7 @@ public class SupportServiceImpl implements SupportService {
         response.setData(this.mapper.map(support, SupportDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process execution success");
+        log.info("Update query in service impl executed");
 
         return response;
 
@@ -87,6 +94,7 @@ public class SupportServiceImpl implements SupportService {
     // API to get all support raised by an employee id
     @Override
     public Response getSupportByEmployeeId(Long employeeId) {
+        log.info("Get Support by Employee Id in service impl triggered");
         Object  data =  this.supportRepository.findByEmployeeId(employeeId)
                 .stream()
                 .map(s -> {
@@ -101,6 +109,7 @@ public class SupportServiceImpl implements SupportService {
         response.setData(data);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process execution success");
+        log.info("Get Support by Employee Id in service impl executed");
 
         return response;
 
@@ -109,6 +118,7 @@ public class SupportServiceImpl implements SupportService {
     // API to get all support raised by all employee
     @Override
     public Response getAllSupports() {
+        log.info("Get all Support in service impl triggered");
         Object data =  this.supportRepository.findAll()
                 .stream()
                 .map(s -> {
@@ -123,6 +133,7 @@ public class SupportServiceImpl implements SupportService {
         response.setData(data);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Process execution success");
+        log.info("Get all Support in service impl executed");
 
         return response;
     }

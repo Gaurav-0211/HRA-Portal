@@ -48,6 +48,8 @@ public class RoleServiceImpl implements RoleService {
         response.setData(mapper.map(role, RoleDto.class));
         response.setStatusCode(AppConstants.CREATED);
         response.setResponse_message("Execution process completed");
+        log.info("Add new role in RoleService Impl executed");
+
         return response;
     }
 
@@ -63,6 +65,8 @@ public class RoleServiceImpl implements RoleService {
         response.setData(null);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
+        log.info("Delete Role in RoleServiceImpl executed");
+
 
         return response;
     }
@@ -70,6 +74,7 @@ public class RoleServiceImpl implements RoleService {
     // API to update an existing role
     @Override
     public Response updateRole(Long id, RoleDto roleDto) {
+        log.info("Update Role in service Impl ");
         Role role = this.roleRepository.findById(id)
                 .orElseThrow(()-> new NoDataExist("No Role exist with the given role Id"));
         this.mapper.map(roleDto, Role.class);
@@ -80,6 +85,8 @@ public class RoleServiceImpl implements RoleService {
         response.setData(mapper.map(saved, RoleDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
+        log.info("Update Role in service Impl executed");
+
         return response;
     }
 
@@ -97,6 +104,8 @@ public class RoleServiceImpl implements RoleService {
         response.setData(roles.stream().map((role) -> this.mapper.map(role, RoleDto.class)).collect(Collectors.toList()));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
+        log.info("Get all role api in Role Service Impl executed");
+
         return response;
     }
 }

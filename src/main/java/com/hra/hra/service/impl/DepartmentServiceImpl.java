@@ -41,6 +41,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         response.setData(this.mapper.map(department, DepartmentDto.class));
         response.setStatusCode(AppConstants.CREATED);
         response.setResponse_message("Execution process completed");
+        log.info("add department in service impl executed");
         return response;
     }
 
@@ -57,6 +58,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         response.setData(departments.stream().map((dept)->this.mapper.map(dept,DepartmentDto.class)).collect(Collectors.toList()));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
+        log.info("get all department in service impl executed");
         return response;
     }
 
@@ -72,6 +74,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         response.setData(null);
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
+        log.info("delete department in service impl executed");
         return response;
     }
 
@@ -88,6 +91,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         response.setData(this.mapper.map(saved, DepartmentDto.class));
         response.setStatusCode(AppConstants.OK);
         response.setResponse_message("Execution process completed");
+        log.info("update department in service impl executed");
         return response;
     }
 }
