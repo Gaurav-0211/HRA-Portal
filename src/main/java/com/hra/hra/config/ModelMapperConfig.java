@@ -9,6 +9,8 @@ import io.swagger.v3.oas.models.info.Info;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.stream.Collectors;
 
@@ -28,6 +30,11 @@ public class ModelMapperConfig {
                         .version("1.0")
                         .description("API documentation for Employee Management System")
                         .contact(new Contact().email("gaurav@gmail.com").name("Kumar").url("abc@gmail.com")));
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 
 }

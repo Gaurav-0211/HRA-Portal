@@ -2,12 +2,15 @@ package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.DepartmentDto;
+import com.hra.hra.dto.EmployeeDto;
 import com.hra.hra.dto.PageResponse;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Department;
+import com.hra.hra.entity.Employee;
 import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.exception.NoDepartmentExist;
 import com.hra.hra.repository.DepartmentRepository;
+import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.service.DepartmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -27,6 +32,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private DepartmentRepository repository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     private ModelMapper mapper;
@@ -136,4 +144,72 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         return response;
     }
+
+    // API to get all employee based on department id(e.g. Finance all employee fetched)
+    @Override
+    public Response getEmployeesOfDepartment(Long id) {
+        log.info("Get all employee department wise in service Impl");
+        Department department = this.repository.findById(id)
+                .orElseThrow(() -> new NoDataExist("Department "+ "id "+ id));
+
+        List<Employee> employees = this.employeeRepository.findByDepartmentId(id);
+
+        List<EmployeeDto> employeeDtos = employees.stream()
+                .map(emp -> mapper.map(emp, EmployeeDto.class))
+                .collect(Collectors.toList());
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Department wise employee fetched successfully");
+        response.setData(employeeDtos);
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Execution process completed");
+        log.info("Get all employee department wise in service Impl executed");
+
+        return response;
+    }
+
+    // API to count all the employee of belonging department
+    @Override
+    public Response getDepartmentAndEmployeeCount(Long id) {
+        log.info("Get department and employee count service Impl");
+        Department department = this.repository.findById(id)
+                .orElseThrow(() -> new NoDataExist("No department fetched with id "+ id));
+
+        Long employeeCount = this.employeeRepository.countByDepartmentId(id);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("departmentId", department.getId());
+        result.put("departmentName", department.getDepartmentName());
+        result.put("employeeCount", employeeCount);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Department wise employee fetched successfully");
+        response.setData(result);
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Execution process completed");
+        log.info("Get department and employee count service Impl executed");
+
+        return response;
+    }
+
+    // API to fetch department by name
+    @Override
+    public Response getDepartmentByName(String name) {
+        log.info("Fetching department by name in service Impl");
+
+        Department department = this.repository.findByDepartmentNameIgnoreCase(name)
+                .orElseThrow(() -> new NoDataExist("No Department fetched with name "+ name));
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Department fetched successfully");
+        response.setData(mapper.map(department, DepartmentDto.class));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Execution process completed");
+
+        log.info("Fetching department by name in service Impl executed");
+
+        return response;
+    }
+
+
 }

@@ -16,4 +16,10 @@ public interface DepartmentService {
     Response updateDepartment(Long id,DepartmentDto departmentDto);
 
     Response getDepartmentById(Long id);
+
+    Response getEmployeesOfDepartment(Long id);
+
+    Response getDepartmentAndEmployeeCount(Long id);
+
+    Response getDepartmentByName(String name);
 }

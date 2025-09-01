@@ -1,6 +1,7 @@
 package com.hra.hra.controller;
 
 
+import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.LeaveApplyRequestDto;
 import com.hra.hra.dto.LeaveDecisionRequestDto;
 import com.hra.hra.dto.Response;
@@ -58,6 +59,40 @@ public class LeaveController {
         log.info("Get applied leave by an employee in controller");
         Response response = this.leaveService.getLeavesByEmployee(employeeId);
         log.info("Get applied leave by an employee in controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    //GET request to fetch a single leave
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<Response> getLeaveByEmployeeId(@PathVariable Long id) {
+        log.info("Get single leave in controller");
+        Response response = this.leaveService.getLeaveById(id);
+        log.info("Get single leave in controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    // Delete Request to remove a leave
+    @DeleteMapping("/deleteById/{id}")
+    public ResponseEntity<Response> deleteLeave(@PathVariable Long id) {
+        log.info("Delete single leave in controller");
+        Response response = this.leaveService.deleteLeave(id);
+        log.info("Delete single leave in controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getAllLeave")
+    public ResponseEntity<Response> getAllLeave(
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+    ) {
+        log.info("Get all leave in controller");
+        Response response = this.leaveService.getAllLeave(pageNumber, pageSize, sortBy, sortDir);
+        log.info("Get all leave in controller executed");
 
         return ResponseEntity.ok(response);
     }

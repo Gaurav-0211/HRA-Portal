@@ -12,4 +12,7 @@ public interface LeaveService {
     Response approveLeave(Long leaveId);
     Response rejectLeave(Long leaveId, String reason);
     Response getLeavesByEmployee(Long employeeId);
+    Response getLeaveById(Long id);
+    Response deleteLeave(Long id);
+    Response getAllLeave(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 }

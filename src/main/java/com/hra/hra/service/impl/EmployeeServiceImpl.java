@@ -21,16 +21,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService, UserDetailsService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -168,5 +173,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         log.info("Get Employee by id in service Impl executed");
 
         return response;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Employee employee = this.employeeRepository.getByEmail(username);
+        if(employee == null){
+            throw  new NoDataExist("No username found with given email");
+        }
+        return (UserDetails) this.mapper.map(employee, EmployeeDto.class);
     }
 }

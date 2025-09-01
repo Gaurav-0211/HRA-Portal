@@ -68,4 +68,33 @@ public class DepartmentController {
         return ResponseEntity.ok(response);
     }
 
+    // GET request to fetch all employees department wise
+    @GetMapping("/getAllEmployeeByDepartmentId/{id}")
+    public  ResponseEntity<Response> getEmployeeByDepartment(@PathVariable Long id){
+        log.info("Get all employee in department in controller");
+        Response response = this.service.getEmployeesOfDepartment(id);
+        log.info("Get all employee in department in controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getEmployeeCountDepartmentId/{id}")
+    public  ResponseEntity<Response> getEmployeeCountByDepartment(@PathVariable Long id){
+        log.info("Get all employee count department wise in controller");
+        Response response = this.service.getDepartmentAndEmployeeCount(id);
+        log.info("Get all employee count department wise in controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    // GET Request to fetch employee by department name
+    @GetMapping("/getDepartmentByName/{name}")
+    public ResponseEntity<Response> getEmployeeCountByDepartment(@PathVariable String name){
+        log.info("Get all department by name in controller");
+        Response response = this.service.getDepartmentByName(name);
+        log.info("Get all department by name in controller executed");
+
+        return ResponseEntity.ok(response);
+    }
+
 }

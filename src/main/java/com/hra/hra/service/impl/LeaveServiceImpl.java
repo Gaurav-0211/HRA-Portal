@@ -2,9 +2,7 @@ package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
 import com.hra.hra.config.LeaveStatus;
-import com.hra.hra.dto.LeaveApplyRequestDto;
-import com.hra.hra.dto.LeaveDto;
-import com.hra.hra.dto.Response;
+import com.hra.hra.dto.*;
 import com.hra.hra.entity.Employee;
 import com.hra.hra.entity.Leave;
 import com.hra.hra.exception.NoDataExist;
@@ -15,6 +13,10 @@ import com.hra.hra.service.LeaveService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -123,4 +125,77 @@ public class LeaveServiceImpl implements LeaveService {
         return response;
     }
 
+    // API to fetch single leave by ID
+    @Override
+    public Response getLeaveById(Long id) {
+        log.info("Get leave by id in leave service Impl");
+        Leave leave = this.leaveRepository.findById(id)
+                .orElseThrow(() -> new NoDataExist("No Leave found with given Id" + id));
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Leave Fetched successfully");
+        response.setData(this.mapper.map(leave, LeaveDto.class));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Process Execution success");
+        log.info("Get leave by id in leave service Impl executed");
+
+        return response;
+    }
+
+    // API to delete a leave
+    @Override
+    public Response deleteLeave(Long id) {
+        log.info("Delete leave by id in service Impl");
+       Leave leave = this.leaveRepository.findById(id)
+               .orElseThrow(()-> new NoDataExist("No leave found with given ID "+id));
+
+       this.leaveRepository.delete(leave);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("leave deleted successfully");
+        response.setData(null);
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Process Execution success");
+        log.info("Delete leave by ID in service Impl executed");
+
+        return response;
+    }
+
+    // API to get all Leave
+    @Override
+    public Response getAllLeave(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
+        log.info("Get all leave in leave service Impl");
+        Sort sort = sortDir != null && sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Leave> leavePage = this.leaveRepository.findAll(pageable);
+
+        List<LeaveDto> leaveDtoList = leavePage
+                .getContent()
+                .stream()
+                .map(leave -> mapper.map(leave, LeaveDto.class))
+                .collect(Collectors.toList());
+
+        log.info("All Leave converted into pages in employee service impl");
+        PageResponse<LeaveDto> obj = PageResponse.<LeaveDto>builder()
+                .content(leaveDtoList)
+                .pageNumber(leavePage.getNumber())
+                .pageSize(leavePage.getSize())
+                .totalElements(leavePage.getTotalElements())
+                .totalPage(leavePage.getTotalPages())
+                .lastPage(leavePage.isLast())
+                .build();
+
+        response.setStatus("SUCCESS");
+        response.setMessage("All Leave fetched successfully");
+        response.setData(obj);
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Execution process completed");
+        log.info("Get all leave in service Impl executed");
+
+        return response;
+
+    }
 }
