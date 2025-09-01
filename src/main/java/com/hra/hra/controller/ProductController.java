@@ -4,6 +4,7 @@ import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.ProductDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class ProductController {
 
     // POST Request to add a new Product
     @PostMapping("/addProduct")
-    public ResponseEntity<Response> addProduct(@RequestBody ProductDto productDto){
+    public ResponseEntity<Response> addProduct(@Valid @RequestBody ProductDto productDto){
         log.info("Add product in controller");
         Response response = this.productService.addProduct(productDto);
         log.info("Add product in controller executed");
@@ -44,7 +45,7 @@ public class ProductController {
 
     // PUT request to update an existing product
     @PutMapping("/updateProduct/{id}")
-    public ResponseEntity<Response> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto){
+    public ResponseEntity<Response> updateProduct(@PathVariable Long id,@Valid @RequestBody ProductDto productDto){
         log.info("Update product in controller");
         Response response = this.productService.updateProduct(id, productDto);
         log.info("Update product in controller executed");

@@ -4,6 +4,7 @@ import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.HolidayDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.HolidayService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class HolidayController {
 
     // POST request to add a holiday
     @PostMapping("/addHoliday")
-    public ResponseEntity<Response> addHoliday(@RequestBody HolidayDto holidayDto){
+    public ResponseEntity<Response> addHoliday(@Valid @RequestBody HolidayDto holidayDto){
         log.info("Add Holiday in controller");
         Response response = this.holidayService.addHoliday(holidayDto);
         log.info("Add Holiday in controller executed");
@@ -28,7 +29,7 @@ public class HolidayController {
 
     // PUT Request to update a holiday
     @PutMapping("/updateHoliday/{id}")
-    public ResponseEntity<Response> updateHoliday(@PathVariable Long id, @RequestBody HolidayDto holidayDto){
+    public ResponseEntity<Response> updateHoliday(@PathVariable Long id,@Valid @RequestBody HolidayDto holidayDto){
         log.info("Update holiday in controller");
         Response response = this.holidayService.updateHoliday(id, holidayDto);
         log.info("Update Holiday in controller executed");

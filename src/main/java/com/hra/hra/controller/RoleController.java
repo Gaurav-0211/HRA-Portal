@@ -3,6 +3,7 @@ package com.hra.hra.controller;
 import com.hra.hra.dto.Response;
 import com.hra.hra.dto.RoleDto;
 import com.hra.hra.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class RoleController {
 
     // POST Request to add a New Role
     @PostMapping("/addRole")
-    ResponseEntity<Response> addNewRole(@RequestBody RoleDto roleDto){
+    ResponseEntity<Response> addNewRole(@Valid @RequestBody RoleDto roleDto){
         log.info("Add new role in controller");
         Response response = this.roleService.addRole(roleDto);
         log.info("Add new role in controller executed");
@@ -30,7 +31,7 @@ public class RoleController {
 
     // PUT Request to update an existing Role
     @PutMapping("/updateRole/{id}")
-    ResponseEntity<Response> updateRole(@PathVariable Long id, @RequestBody RoleDto roleDto){
+    ResponseEntity<Response> updateRole(@PathVariable Long id,@Valid @RequestBody RoleDto roleDto){
         log.info("Update Role By role id in controller");
         Response response = this.roleService.updateRole(id, roleDto);
         log.info("Update Role By role id in controller executed");

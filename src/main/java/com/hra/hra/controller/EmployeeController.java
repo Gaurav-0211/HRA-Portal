@@ -28,7 +28,7 @@ public class EmployeeController {
 
     // PUT Request to update an existing employee
     @PutMapping("/update-employee/{id}")
-    ResponseEntity<Response> updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto employeeDto){
+    ResponseEntity<Response> updateEmployee(@PathVariable Long id, @Valid @RequestBody EmployeeDto employeeDto){
         log.info("Update employee in controller");
         Response response = this.employeeService.update(id,employeeDto);
         log.info("Update employee in controller executed");

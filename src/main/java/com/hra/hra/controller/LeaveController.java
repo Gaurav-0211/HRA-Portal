@@ -5,6 +5,7 @@ import com.hra.hra.dto.LeaveApplyRequestDto;
 import com.hra.hra.dto.LeaveDecisionRequestDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.LeaveService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class LeaveController {
     @PostMapping("/apply/{employeeId}")
     public ResponseEntity<Response> applyLeave(
             @PathVariable Long employeeId,
-            @RequestBody LeaveApplyRequestDto requestDto) {
+            @RequestBody @Valid LeaveApplyRequestDto requestDto) {
         log.info("Apply leave in controller");
         Response response = this.leaveService.applyLeave(employeeId, requestDto);
         log.info("Apply leave in controller executed");
@@ -43,7 +44,7 @@ public class LeaveController {
     @PutMapping("/reject/{leaveId}")
     public ResponseEntity<Response> rejectLeave(
             @PathVariable Long leaveId,
-            @RequestBody LeaveDecisionRequestDto requestDto) {
+            @RequestBody @Valid LeaveDecisionRequestDto requestDto) {
         log.info("Reject leave in controller");
         Response response = this.leaveService.rejectLeave(leaveId, requestDto.getReason());
         log.info("Reject leave in controller executed");

@@ -4,6 +4,7 @@ import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.DepartmentDto;
 import com.hra.hra.dto.Response;
 import com.hra.hra.service.DepartmentService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class DepartmentController {
 
     // POST Request to add department
     @PostMapping("/addDepartment")
-    public ResponseEntity<Response> addDepartment(@RequestBody DepartmentDto departmentDto){
+    public ResponseEntity<Response> addDepartment(@Valid @RequestBody DepartmentDto departmentDto){
         log.info("Add new Department in controller");
         Response response = this.service.addDepartment(departmentDto);
         return ResponseEntity.ok(response);
@@ -50,7 +51,7 @@ public class DepartmentController {
 
     // PUT Request to update an existing department
     @PutMapping("/updateDepartment/{id}")
-    ResponseEntity<Response> updateDept(@PathVariable Long id,@RequestBody DepartmentDto departmentDto){
+    ResponseEntity<Response> updateDept(@PathVariable Long id,@Valid @RequestBody DepartmentDto departmentDto){
         log.info("update department in controller");
         Response response = this.service.updateDepartment(id,departmentDto);
 

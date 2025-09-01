@@ -77,7 +77,7 @@ public class ProjectController {
 
     // PUT request to update an existing project
     @PutMapping("/updateProject/{id}")
-    public ResponseEntity<Response> updateProject(@PathVariable Long id, @RequestBody ProjectDto projectDto){
+    public ResponseEntity<Response> updateProject(@PathVariable Long id,@Valid @RequestBody ProjectDto projectDto){
         log.info("Update project by id in controller");
         Response response = this.projectService.updateProject(id,projectDto);
         log.info("Update project by id in controller executed");

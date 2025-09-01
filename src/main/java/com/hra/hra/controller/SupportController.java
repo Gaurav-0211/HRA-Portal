@@ -4,6 +4,7 @@ import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.Response;
 import com.hra.hra.dto.SupportDto;
 import com.hra.hra.service.SupportService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class SupportController {
 
     //POST request to raise a new support query
     @PostMapping("/raiseQuery")
-    public ResponseEntity<Response> raisedQuery(@RequestBody SupportDto supportDto){
+    public ResponseEntity<Response> raisedQuery(@Valid @RequestBody SupportDto supportDto){
         log.info("Raise query in support controller");
         Response response = this.supportService.addQuery(supportDto);
         log.info("Raise query in support controller executed");
@@ -28,7 +29,7 @@ public class SupportController {
 
     // PUT request to update an existing query
     @PutMapping("/updateQuery/{id}")
-    public ResponseEntity<Response> updateQuery(@PathVariable Long id, @RequestBody SupportDto supportDto){
+    public ResponseEntity<Response> updateQuery(@PathVariable Long id,@Valid @RequestBody SupportDto supportDto){
         log.info("Update query in support controller");
 
         Response response = this.supportService.updateQuery(id, supportDto);

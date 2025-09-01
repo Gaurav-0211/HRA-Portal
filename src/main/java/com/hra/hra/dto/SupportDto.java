@@ -1,5 +1,6 @@
 package com.hra.hra.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,16 @@ import java.time.LocalDate;
 public class SupportDto {
     private Long id;
 
+    @NotEmpty(message = "Issue type must be filled")
     private String issueType;
 
+    @NotEmpty(message = "description cannot be empty")
     private String description;
 
+    @NotEmpty(message = "Status cannot be empty")
     private String status;
 
+    @NotEmpty(message = "Date must be in YYYY-MM-DD format")
     private LocalDate createdAt;
 
     private Long employeeId;

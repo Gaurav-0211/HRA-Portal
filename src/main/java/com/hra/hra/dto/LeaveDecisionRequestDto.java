@@ -1,5 +1,7 @@
 package com.hra.hra.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,5 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LeaveDecisionRequestDto {
 
+    @NotEmpty(message = "reason cannot be empty")
     private String reason; // Only for rejection
 }
