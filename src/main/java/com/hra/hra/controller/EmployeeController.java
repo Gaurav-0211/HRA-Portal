@@ -8,6 +8,7 @@ import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.security.JwtTokenHelper;
 import com.hra.hra.service.EmployeeService;
+import com.hra.hra.service.SecurityService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +27,7 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @Autowired
-    private CustomUserDetailService customUserDetailService;
-
-    @Autowired
-    private JwtTokenHelper jwtTokenHelper;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private SecurityService securityService;
 
     // POST Request to Register an Employee
     @PostMapping("/register")
@@ -142,40 +134,9 @@ public class EmployeeController {
     //Post request to Authenticated loing for token generation
     @PostMapping("/auth-login")
     public ResponseEntity<Response> authLogin(@RequestBody LoginDto request) {
-        // 1. Authenticate credentials
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        // 2. Load UserDetails
-        UserDetails userDetails = this.customUserDetailService.loadUserByUsername(request.getEmail());
-
-        // 3. Get agent from DB
-        Employee employee = this.employeeRepository.findByEmail(request.getEmail());
-        if (employee == null) {
-            throw new NoDataExist("User not exist with the given mail Id");
-        }
-
-        // 4. Compare role
-        String dbRole = employee.getEmployeeRole().getName().name(); // assuming enum stored in DB
-        String requestRole = request.getRole().name();
-
-        if (!dbRole.equalsIgnoreCase(requestRole)) {
-            throw new NoDataExist("Access denied: Role mismatch. You are not authorized as " + requestRole);
-        }
-
-        // 5. Generate JWT with role
-        String token = jwtTokenHelper.generateToken(userDetails, dbRole);
-
-        Response response = new Response();
-        response.setStatus("SUCCESS");
-        response.setMessage("Token generated successfully");
-        response.setData(token);
-        response.setStatusCode(AppConstants.OK);
-        response.setResponse_message("Process execution success");
+        log.info("Auth Login employee controller");
+        Response response = this.securityService.authLogin(request.getEmail(), request.getPassword(), request.getRole().name());
+        log.info("Auth Login employee controller executed");
 
         return ResponseEntity.ok(response);
     }
