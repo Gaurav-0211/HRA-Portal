@@ -54,8 +54,10 @@ public class EmployeeDto {
     // For input department
     private Long departmentId;
 
+    // to assign a role(NORMAL, ADMIN e.g. )
+    private Long employeeRoleId;
     // For output department
-    private DepartmentDto department;
+    //private DepartmentDto department;
 
     // To get List of leave applied by an employee
     private List<LeaveDto> leaves;

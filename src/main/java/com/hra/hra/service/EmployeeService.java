@@ -17,4 +17,25 @@ public interface EmployeeService {
 
     Response getEmployeeById(Long id);
 
+    Response getEmployeeCount();
+
+    // Update password when employee is already logged in
+    Response updatePassword(String email,String newPassword, String confirmPassword);
+
+    // Validate Employee is genuine or not
+    Response validateEmployee(String email, String password);
+
+    // Api to forgot password by sending verification link
+    Response sendVerificationLink(String email);
+
+    //change password after link verification
+    Response changeNewPassword(String token, String newPassword, String confirmPassword);
+
+    // Auth login to generate token to api access
+    //Response authLogin(String email, String password);
+
+
+
+
+
 }

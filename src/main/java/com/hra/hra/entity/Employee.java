@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +17,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "employee")
-public class Employee {
+public class Employee implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -86,4 +85,52 @@ public class Employee {
     @JsonIgnore
     private Set<Product> products = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "employee_role")
+    private EmployeeRole employeeRole;
+
+
+    // Below three is for sending and validating link to forgot password while sending a link on mail
+    private String resetToken;
+
+    private LocalDateTime resetTokenExpiry;
+
+    private LocalDateTime lastResetLinkSentAt;
+
+    // Below two is to track login attempts and lock login
+    private int failedLoginAttempts;
+
+    private LocalDateTime accountLockedUntil;
+
+
+    // User Details methods
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
