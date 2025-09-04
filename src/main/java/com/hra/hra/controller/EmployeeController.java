@@ -1,23 +1,12 @@
 package com.hra.hra.controller;
 
 import com.hra.hra.config.AppConstants;
-import com.hra.hra.config.CustomUserDetailService;
 import com.hra.hra.dto.*;
-import com.hra.hra.entity.Employee;
-import com.hra.hra.exception.NoDataExist;
-import com.hra.hra.repository.EmployeeRepository;
-import com.hra.hra.security.JwtTokenHelper;
 import com.hra.hra.service.EmployeeService;
-import com.hra.hra.service.SecurityService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
@@ -26,9 +15,6 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
-
-//    @Autowired
-//    private SecurityService securityService;
 
     // POST Request to Register an Employee
     @PostMapping("/register")
@@ -130,19 +116,5 @@ public class EmployeeController {
         log.info("Change password internally controller executed");
         return ResponseEntity.ok(response);
     }
-
-
-    // Post request to Authenticated loing for token generation
-//    @PostMapping("/auth-login")
-//    public ResponseEntity<Response> authLogin(@RequestBody LoginRequest request,
-//                                          HttpServletResponse httpResponse) {
-//        log.info("Auth login in employee controller");
-//
-//        Response response = this.securityService.authLogin(request.getEmail(), request.getPassword(), httpResponse);
-//
-//        log.info("Auth login in employee controller executed");
-//        return ResponseEntity.ok(response);
-//    }
-
 
 }
