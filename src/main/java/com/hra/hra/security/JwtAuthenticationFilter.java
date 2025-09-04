@@ -3,8 +3,10 @@ package com.hra.hra.security;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import io.jsonwebtoken.security.SignatureException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,28 +30,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenHelper tokenHelper;
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // 1. Bypass filter for login endpoint
+        // 1. Skip filter for login endpoint
         String requestPath = request.getRequestURI();
         if (requestPath.contains("/api/auth/login")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. Extract JWT token
-        final String requestToken = request.getHeader("Authorization");
         String username = null;
         String token = null;
 
+        // 2. Extract token from Authorization header
+        String requestToken = request.getHeader("Authorization");
         if (requestToken != null && requestToken.startsWith("Bearer ")) {
             token = requestToken.substring(7);
+        }
+
+        // 3. If not found, check cookies
+        if (token == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwtToken".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // 4. Extract username from Access Token
+        if (token != null) {
             try {
-                username = this.tokenHelper.getUserNameFromToken(token);
+                username = this.tokenHelper.getUsernameFromToken(token, false); // false = access token
             } catch (IllegalArgumentException e) {
                 request.setAttribute("jwt_exception", e);
                 throw new AuthenticationServiceException("Unable to get JWT token", e);
@@ -67,16 +81,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 request.setAttribute("jwt_exception", e);
                 throw new AuthenticationServiceException("Unsupported JWT token", e);
             }
-        } else {
-            System.out.println("JWT Token does not begin with Bearer");
         }
 
-
-        // 3. Validate token and set authentication
+        // 5. Validate token & authenticate user
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            if (this.tokenHelper.validateToken(token, userDetails)) {
+            if (this.tokenHelper.validateAccessToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
@@ -86,11 +97,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 System.out.println("Invalid JWT Token");
             }
-        } else if (username == null) {
-            System.out.println("Username is null, skipping authentication");
         }
 
-        // 4. Continue filter chain
+        // 6. Continue filter chain
         filterChain.doFilter(request, response);
     }
 }

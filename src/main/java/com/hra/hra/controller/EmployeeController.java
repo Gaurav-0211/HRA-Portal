@@ -9,6 +9,7 @@ import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.security.JwtTokenHelper;
 import com.hra.hra.service.EmployeeService;
 import com.hra.hra.service.SecurityService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,8 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @Autowired
-    private SecurityService securityService;
+//    @Autowired
+//    private SecurityService securityService;
 
     // POST Request to Register an Employee
     @PostMapping("/register")
@@ -131,14 +132,17 @@ public class EmployeeController {
     }
 
 
-    //Post request to Authenticated loing for token generation
-    @PostMapping("/auth-login")
-    public ResponseEntity<Response> authLogin(@RequestBody LoginDto request) {
-        log.info("Auth Login employee controller");
-        Response response = this.securityService.authLogin(request.getEmail(), request.getPassword(), request.getRole().name());
-        log.info("Auth Login employee controller executed");
+    // Post request to Authenticated loing for token generation
+//    @PostMapping("/auth-login")
+//    public ResponseEntity<Response> authLogin(@RequestBody LoginRequest request,
+//                                          HttpServletResponse httpResponse) {
+//        log.info("Auth login in employee controller");
+//
+//        Response response = this.securityService.authLogin(request.getEmail(), request.getPassword(), httpResponse);
+//
+//        log.info("Auth login in employee controller executed");
+//        return ResponseEntity.ok(response);
+//    }
 
-        return ResponseEntity.ok(response);
-    }
 
 }

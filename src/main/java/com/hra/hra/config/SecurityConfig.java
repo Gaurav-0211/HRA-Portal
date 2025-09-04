@@ -54,16 +54,21 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                           .requestMatchers(PUBLIC_URLS).permitAll()
-//                        .requestMatchers(HttpMethod.PUT,"/api/users/**").hasAnyRole("ADMIN","SUPER_ADMIN")
-//                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyRole("ADMIN","SUPER_ADMIN")
-//                        .requestMatchers(HttpMethod.GET).hasAnyRole("ADMIN","SUPER_ADMIN","NORMAL")
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN","NORMAL")
+                        .requestMatchers("/api/user/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT,"/api/employees/**").hasAnyRole("ADMIN","SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/employees/**").hasAnyRole("ADMIN","SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET).hasAnyRole("ADMIN","SUPER_ADMIN","NORMAL")
                                 .requestMatchers(HttpMethod.GET).permitAll()
                                 .requestMatchers(HttpMethod.DELETE).permitAll()
                                 .requestMatchers(HttpMethod.PUT).permitAll()
                         .requestMatchers(HttpMethod.POST).permitAll()
                         .requestMatchers(HttpMethod.PATCH).permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
