@@ -1,7 +1,9 @@
 package com.hra.hra.dto;
 
 import com.hra.hra.config.LeaveType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,9 +17,9 @@ public class LeaveApplyRequestDto {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @NotEmpty(message = "Leave type cannot be empty")
+    @NotNull(message = "Leave type cannot be null")
     private LeaveType type;
 
-    @NotEmpty(message = "Reason must be added")
+    @NotBlank(message = "Reason must be added")
     private String reason;
 }

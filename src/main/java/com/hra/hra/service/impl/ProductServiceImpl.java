@@ -123,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.productRepository.findById(id)
                 .orElseThrow(()-> new NoDataExist("No Product found with given Id "+id));
 
-        this.mapper.map(productDto, Product.class);
+        this.mapper.map(productDto, product);
         Product saved = this.productRepository.save(product);
 
         response.setStatus("SUCCESS");

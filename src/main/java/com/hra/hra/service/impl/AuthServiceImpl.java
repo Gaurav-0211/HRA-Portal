@@ -12,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -51,23 +52,27 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public RefreshToken create(String username, String token, Instant expiry) {
+        log.info("Create refresh token in auth service Impl");
         Employee emp = this.employeeRepository.getByEmail(username);
         this.refreshTokenRepository.deleteByEmployeeId(emp.getId());
         RefreshToken r = new RefreshToken();
         r.setEmployee(this.employeeRepository.getByEmail(username));
         r.setToken(token);
         r.setExpiryDate(expiry);
+        log.info("Create refresh token in auth service Impl executed");
         return this.refreshTokenRepository.save(r);
     }
 
     @Transactional
     @Override
     public void deleteToken(String token) {
+        log.info("delete token after logout auth service Impl");
         this.refreshTokenRepository.findByToken(token).ifPresent(refreshTokenRepository::delete);
     }
 
     @Override
     public Optional<RefreshToken> findByToken(String token) {
+        log.info("search employee by token auth service Impl");
         return this.refreshTokenRepository.findByToken(token);
     }
 
@@ -75,6 +80,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> login(String email, String password, HttpServletResponse response) {
+        log.info("login in auth service impl triggered");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
@@ -101,6 +107,8 @@ public class AuthServiceImpl implements AuthService {
 
         response.addHeader("Set-Cookie", cookie.toString());
 
+        log.info("login in auth service impl executed");
+
         return ResponseEntity.ok(Map.of(
                 "accessToken", accessToken,
                 "user", emp
@@ -109,6 +117,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Refresh token in auth service Impl triggered");
         var cookies = request.getCookies();
         if (cookies == null) {
             return ResponseEntity.status(AppConstants.SC_UNAUTHORIZED).body(Map.of("message", "Refresh token not found"));
@@ -144,11 +153,14 @@ public class AuthServiceImpl implements AuthService {
 
         String newAccessToken = this.jwtTokenHelper.generateAccessToken(userDetails, dbToken.getEmployee().getEmployeeRole().getName().name());
 
+        log.info("Refresh token in auth service Impl executed");
+
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
 
     @Override
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Logout in auth service Impl triggered");
         var cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie c : cookies) {
@@ -168,6 +180,9 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
+
+        log.info("Logout in auth service Impl executed");
+
         return ResponseEntity.ok(Map.of("message", "Logged out"));
     }
 }

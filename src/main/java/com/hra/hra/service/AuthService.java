@@ -17,7 +17,8 @@ public interface AuthService {
 
     Optional<RefreshToken> findByToken(String token);
 
-    ResponseEntity<?> login(String email, String password, HttpServletResponse response);
+    ResponseEntity<?>
+    login(String email, String password, HttpServletResponse response);
 
     ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response);
 

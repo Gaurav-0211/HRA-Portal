@@ -86,7 +86,7 @@ public class ProjectController {
     }
 
     // DELETE request to delete project
-    @GetMapping("/deleteProject/{id}")
+    @DeleteMapping("/deleteProject/{id}")
     public ResponseEntity<Response> deleteProject(@PathVariable Long id){
         log.info("Delete project by id in controller");
         Response response = this.projectService.deleteProject(id);

@@ -1,6 +1,5 @@
 package com.hra.hra.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,6 +26,4 @@ public class ProductDto {
 
     private LocalDate launchDate;
 
-    @JsonIgnoreProperties("products")
-    private Set<EmployeeDto> employees;
 }

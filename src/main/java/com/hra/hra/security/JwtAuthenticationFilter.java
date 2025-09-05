@@ -20,6 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -30,14 +33,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenHelper tokenHelper;
 
+    private static final String[] PUBLIC_URLS = {
+            "/api/auth/login",
+            "/api/projects/**",
+            "/api/products/**",
+            "/api/employees/**"
+    };
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
         // 1. Skip filter for login endpoint
-        String requestPath = request.getRequestURI();
-        if (requestPath.contains("/api/auth/login")) {
+//        String requestPath = request.getRequestURI();
+//        if (requestPath.contains("/api/auth/login")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+
+
+        if (Arrays.stream(PUBLIC_URLS).anyMatch(path::startsWith)) {
             filterChain.doFilter(request, response);
             return;
         }

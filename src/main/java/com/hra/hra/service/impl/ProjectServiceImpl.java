@@ -167,7 +167,7 @@ public class ProjectServiceImpl implements ProjectService {
         log.info("update an existing project service Impl");
         Project project = this.projectRepository.findById(id)
                 .orElseThrow(()->new NoDataExist("No project found with given ID"));
-        this.mapper.map(projectDto, Project.class);
+        this.mapper.map(projectDto, project);
         Project saved = this.projectRepository.save(project);
 
         response.setStatus("SUCCESS");

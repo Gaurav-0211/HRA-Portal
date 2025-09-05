@@ -24,7 +24,6 @@ public class SupportDto {
     @NotEmpty(message = "Status cannot be empty")
     private String status;
 
-    @NotEmpty(message = "Date must be in YYYY-MM-DD format")
     private LocalDate createdAt;
 
     private Long employeeId;
