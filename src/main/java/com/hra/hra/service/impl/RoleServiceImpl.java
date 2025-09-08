@@ -77,7 +77,7 @@ public class RoleServiceImpl implements RoleService {
         log.info("Update Role in service Impl ");
         Role role = this.roleRepository.findById(id)
                 .orElseThrow(()-> new NoDataExist("No Role exist with the given role Id"));
-        this.mapper.map(roleDto, Role.class);
+        this.mapper.map(roleDto, role);
         Role saved = this.roleRepository.save(role);
 
         response.setStatus("SUCCESS");

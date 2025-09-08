@@ -11,6 +11,7 @@ import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.repository.ProjectRepository;
 import com.hra.hra.service.ProjectService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,11 +182,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // API to delete an existing project
+    @Transactional
     @Override
     public Response deleteProject(Long id) {
         log.info("Deleted an existing project service impl");
         Project project = this.projectRepository.findById(id)
                 .orElseThrow(()-> new NoDataExist("No project found with given Id"));
+        // Delete project id assigned to all those employees first
+        for (Employee emp : this.employeeRepository.findAll()) {
+            emp.getProjects().remove(project);
+        }
+
+        // Delete project now
         this.projectRepository.delete(project);
 
         response.setStatus("SUCCESS");

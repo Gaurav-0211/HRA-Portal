@@ -55,7 +55,7 @@ public class EmployeeDto {
     private Long departmentId;
 
     // to assign a role(NORMAL, ADMIN e.g. )
-    private Long employeeRoleId;
+    private Long employeeRoleId = 4L;
     // For output department
     //private DepartmentDto department;
 

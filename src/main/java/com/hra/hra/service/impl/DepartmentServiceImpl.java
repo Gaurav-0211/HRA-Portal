@@ -117,7 +117,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         log.info("Update department in service Impl");
         Department department = this.repository.findById(id)
                 .orElseThrow(()-> new NoDataExist("No department exist with the given id"));
-        this.mapper.map(departmentDto,Department.class);
+        this.mapper.map(departmentDto,department);
         Department saved = this.repository.save(department);
         response.setStatus("SUCCESS");
         response.setMessage("Department updated successfully");
@@ -191,6 +191,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         return response;
     }
+
 
     // API to fetch department by name
     @Override

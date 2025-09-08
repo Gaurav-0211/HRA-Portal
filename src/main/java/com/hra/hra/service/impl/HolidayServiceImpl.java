@@ -58,7 +58,7 @@ public class HolidayServiceImpl implements HolidayService {
         log.info("Update Holiday in Service Impl triggered");
         Holiday holiday = this.holidayRepository.findById(id)
                 .orElseThrow(()->new NoDataExist("No holiday found with given id"));
-        this.mapper.map(holidayDto, Holiday.class);
+        this.mapper.map(holidayDto, holiday);
         Holiday updated = this.holidayRepository.save(holiday);
 
         response.setStatus("SUCCESS");

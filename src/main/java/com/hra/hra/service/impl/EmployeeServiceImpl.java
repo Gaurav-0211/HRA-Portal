@@ -115,7 +115,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         log.info("Update employee in service Impl triggered");
         Employee employee = this.employeeRepository.findById(id)
                 .orElseThrow(()->new NoDataExist("No Employee Exist with given Id"));
-        this.mapper.map(employeeDto, Employee.class);
+        this.mapper.map(employeeDto, employee);
         employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
         employee.setUpdatedAt(LocalDateTime.now());
         Employee saved = this.employeeRepository.save(employee);
