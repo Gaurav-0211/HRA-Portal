@@ -111,15 +111,37 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     // API to update an existing user
     @Override
-    public Response update(Long id, EmployeeDto employeeDto) {
+    public Response update(Long id, EmployeeDto dto) {
         log.info("Update employee in service Impl triggered");
         Employee employee = this.employeeRepository.findById(id)
                 .orElseThrow(()->new NoDataExist("No Employee Exist with given Id"));
-        this.mapper.map(employeeDto, employee);
-        employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
-        employee.setUpdatedAt(LocalDateTime.now());
+
+        // update only the fields you want
+        employee.setName(dto.getName());
+        employee.setEmail(dto.getEmail());
+        employee.setPassword(passwordEncoder.encode(dto.getPassword()));
+        employee.setContactNumber(dto.getContactNumber());
+        employee.setAddress(dto.getAddress());
+
+        if (dto.getRoleId() != null) {
+            Role role = this.roleRepository.findById(dto.getRoleId())
+                    .orElseThrow(() -> new NoDataExist("Role not found"));
+            employee.setRole(role);
+        }
+
+        if (dto.getEmployeeRoleId() != null) {
+            EmployeeRole empRole = this.employeeRoleRepository.findById(dto.getEmployeeRoleId())
+                    .orElseThrow(() -> new NoDataExist("EmployeeRole not found"));
+            employee.setEmployeeRole(empRole);
+        }
+
+        if (dto.getDepartmentId() != null) {
+            Department dept = this.departmentRepository.findById(dto.getDepartmentId())
+                    .orElseThrow(() -> new NoDataExist("Department not found"));
+            employee.setDepartment(dept);
+        }
+
         Employee saved = this.employeeRepository.save(employee);
-        log.info("Employee updated success service impl");
 
         // Sending a proper response from service Impl
         response.setStatus("SUCCESS");
