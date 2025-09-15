@@ -3,8 +3,6 @@ package com.hra.hra.service;
 import com.hra.hra.dto.ProjectDto;
 import com.hra.hra.dto.Response;
 
-import java.util.List;
-
 public interface ProjectService {
     Response createProject(ProjectDto projectDto);
     Response assignEmployeeToProject(Long projectId, Long employeeId);

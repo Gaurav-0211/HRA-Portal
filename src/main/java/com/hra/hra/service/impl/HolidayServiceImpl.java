@@ -1,11 +1,9 @@
 package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
-import com.hra.hra.dto.EmployeeDto;
 import com.hra.hra.dto.HolidayDto;
 import com.hra.hra.dto.PageResponse;
 import com.hra.hra.dto.Response;
-import com.hra.hra.entity.Employee;
 import com.hra.hra.entity.Holiday;
 import com.hra.hra.exception.NoDataExist;
 import com.hra.hra.repository.HolidayRepository;

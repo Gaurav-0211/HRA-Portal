@@ -3,8 +3,6 @@ package com.hra.hra.service;
 import com.hra.hra.dto.Response;
 import com.hra.hra.dto.SupportDto;
 
-import java.util.List;
-
 public interface SupportService {
 
     Response addQuery(SupportDto supportDto);

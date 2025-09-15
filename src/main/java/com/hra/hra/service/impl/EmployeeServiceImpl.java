@@ -8,14 +8,13 @@ import com.hra.hra.entity.Department;
 import com.hra.hra.entity.Employee;
 import com.hra.hra.entity.EmployeeRole;
 import com.hra.hra.entity.Role;
-import com.hra.hra.exception.NoDepartmentExist;
 import com.hra.hra.exception.NoDataExist;
+import com.hra.hra.exception.NoDepartmentExist;
 import com.hra.hra.exception.NoRoleExist;
 import com.hra.hra.repository.DepartmentRepository;
 import com.hra.hra.repository.EmployeeRepository;
 import com.hra.hra.repository.EmployeeRoleRepository;
 import com.hra.hra.repository.RoleRepository;
-import com.hra.hra.security.JwtTokenHelper;
 import com.hra.hra.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,12 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -357,7 +350,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.save(employee);
 
         // Reset link point to forgot react page where user will add new password and confirm password
-        String resetLink = "http://localhost:8081/forgot-password-link?token=" + token;
+        String resetLink = "http://localhost:5173/forgot-password-link?token=" + token;
 
         // Send email
         sendEmailLink(email, resetLink);
@@ -421,7 +414,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setResponse_message("Process execution completed");
 
         return response;
-
 
     }
 
