@@ -95,4 +95,12 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
+    // GET request to fetch all projects of an employee
+    @GetMapping("/getProject/employee/{id}")
+    public ResponseEntity<Response> getByEmployeeId(@PathVariable Long id){
+        log.info("Get project by employee Id in project controller");
+        Response response = this.projectService.getProjectByEmployeeId(id);
+        return ResponseEntity.ok(response);
+    }
+
 }

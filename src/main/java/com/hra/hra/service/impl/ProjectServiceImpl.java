@@ -205,4 +205,20 @@ public class ProjectServiceImpl implements ProjectService {
 
         return response;
     }
+
+    // API to get all projects by employee Id
+    @Override
+    public Response getProjectByEmployeeId(Long id) {
+        log.info("Get project by employee Id in service Impl");
+        Employee employee = this.employeeRepository.findById(id)
+                .orElseThrow(()-> new NoDataExist("No employee found with given Id"));
+        List<Project> projects = this.projectRepository.findByEmployees_Id(id);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Project fetched success");
+        response.setData(projects.stream().map((p)-> this.mapper.map(p, ProjectDto.class)).collect(Collectors.toList()));
+        response.setStatusCode(AppConstants.OK);
+        response.setResponse_message("Process executed completed");
+        return response;
+    }
 }

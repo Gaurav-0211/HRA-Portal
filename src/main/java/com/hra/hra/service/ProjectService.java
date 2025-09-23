@@ -11,4 +11,5 @@ public interface ProjectService {
     Response getAllProjects(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
     Response updateProject(Long id, ProjectDto projectDto);
     Response deleteProject(Long id);
+    Response getProjectByEmployeeId(Long id);
 }

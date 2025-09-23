@@ -350,7 +350,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.save(employee);
 
         // Reset link point to forgot react page where user will add new password and confirm password
-        String resetLink = "http://localhost:5173/forgot-password-link?token=" + token;
+        String resetLink = "http://localhost:5173/forgot-password?token=" + token;
 
         // Send email
         sendEmailLink(email, resetLink);

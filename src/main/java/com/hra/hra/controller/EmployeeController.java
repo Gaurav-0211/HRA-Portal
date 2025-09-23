@@ -60,9 +60,23 @@ public class EmployeeController {
     // GET Request to fetch a single Employee
     @GetMapping("/getEmployee/{id}")
     public ResponseEntity<Response> getEmpById(@PathVariable Long id){
-        log.info("Get employee by Id in controller");
+        log.info("Get single employee in controller");
+
+        // Validate ID
+        if (id == null || id <= 0) {
+            Response errorResponse = new Response();
+            errorResponse.setStatus("ERROR");
+            errorResponse.setMessage("Invalid employee ID");
+            errorResponse.setData(null);
+            errorResponse.setStatusCode(400);
+            errorResponse.setResponse_message("Process execution failed");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
+        // Fetch leave
         Response response = this.employeeService.getEmployeeById(id);
-        log.info("Get employee by Id in controller executed");
+        log.info("Get single leave in controller executed");
+
         return ResponseEntity.ok(response);
     }
 
