@@ -1,9 +1,6 @@
 package com.hra.hra.config;
 
-import com.hra.hra.dto.ProjectDto;
-import com.hra.hra.entity.Employee;
 import com.hra.hra.entity.EmployeeRole;
-import com.hra.hra.entity.Project;
 import com.hra.hra.repository.EmployeeRoleRepository;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -17,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 public class ModelMapperConfig {
