@@ -17,6 +17,7 @@ public class EmployeeLocationController {
     @Autowired
     private final EmployeeLocationService locationService;
 
+
     @Autowired
     private final SimpMessagingTemplate messagingTemplate; // for WebSocket push
 
