@@ -29,6 +29,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -65,11 +66,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private EmployeeRoleRepository employeeRoleRepository;
 
+    @Autowired
+    private LeaveServiceImplementation leaveServiceImplementation;
+
 
     // API to register a new Employee
     @Override
     public Response register(EmployeeDto employeeDto) {
         log.info("Register api triggered in service Impl");
+        Employee emp  = this.employeeRepository.findByEmail(employeeDto.getEmail());
+        if(emp != null){
+            response.setStatus("FAILED");
+            response.setMessage("Email Id already registered");
+            response.setData(null);
+            response.setStatusCode(202);
+            response.setResponse_message("Process execution success");
+
+            return response;
+        }
         Employee employee = this.mapper.map(employeeDto, Employee.class);
         employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
 
@@ -90,9 +104,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         // Set created and updated time
         employee.setCreatedAt(LocalDateTime.now());
         employee.setUpdatedAt(LocalDateTime.now());
+        employee.setJoinDate(LocalDate.now());
+
 
         // Save employee
-        Employee savedEmployee = employeeRepository.save(employee);
+        Employee savedEmployee = this.employeeRepository.save(employee);
+
+        // Initialize balances for the joining month
+        leaveServiceImplementation.initializeBalancesForJoin(savedEmployee);
+
         response.setStatus("SUCCESS");
         response.setStatusCode(AppConstants.CREATED);
         response.setMessage("Employee Registered Success");

@@ -7,6 +7,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,6 +42,10 @@ public class Employee implements UserDetails {
 
     private LocalDateTime updatedAt;
 
+    private LocalDate joinDate;
+
+    private boolean active = true;
+
     // Many Employee can have same role
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)
@@ -53,7 +58,7 @@ public class Employee implements UserDetails {
 
     // One Employee can apply many leaves
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Leave> leaves = new ArrayList<>();
+    private List<LeaveRequest> leaves = new ArrayList<>();
 
     // Many employee can work on multiple project
     @ManyToMany(fetch = FetchType.EAGER)

@@ -60,7 +60,7 @@ public class EmployeeDto {
     //private DepartmentDto department;
 
     // To get List of leave applied by an employee
-    private List<LeaveDto> leaves;
+    private List<LeaveRequestDto> leaves;
 
     // To get List of project done/working by an employee
     private Set<ProjectDto> projects;
