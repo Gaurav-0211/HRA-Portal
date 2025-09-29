@@ -71,5 +71,12 @@ public class LeaveControllerImpl {
         this.leaveService.runMonthlyAccrual(runDate);
         return ResponseEntity.ok("Monthly accrual executed for " + runDate);
     }
+
+    // Get all applied Leave
+    @GetMapping("/getAll")
+    public ResponseEntity<Response> getAllLeave(){
+        Response response = this.leaveService.getAllLeave();
+        return ResponseEntity.ok(response);
+    }
 }
 

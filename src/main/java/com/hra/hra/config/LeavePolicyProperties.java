@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 
 @Component
 @ConfigurationProperties(prefix = "leave.policy")
-@Getter @Setter
+@Getter
+@Setter
 public class LeavePolicyProperties {
     // annual allocations
     private BigDecimal clAnnual = BigDecimal.valueOf(7);
@@ -18,13 +19,32 @@ public class LeavePolicyProperties {
     // monthly cap (global)
     private BigDecimal monthlyPaidCap = BigDecimal.valueOf(2.5);
 
-    public BigDecimal getMonthlyAccrualForType(com.hra.hra.config.LeaveType type) {
+    // Annual allocation for each type
+    public BigDecimal getAnnualAllocationForType(LeaveType type) {
+        switch (type) {
+            case CASUAL:
+                return clAnnual;
+            case SICK:
+                return slAnnual;
+            case EARNED:
+                return elAnnual;
+            default:
+                return BigDecimal.ZERO;
+        }
+    }
+
+    // Monthly accrual
+    public BigDecimal getMonthlyAccrualForType(LeaveType type) {
         BigDecimal months = BigDecimal.valueOf(12);
         switch (type) {
-            case CASUAL: return clAnnual.divide(months, 6, java.math.RoundingMode.HALF_UP);
-            case SICK: return slAnnual.divide(months, 6, java.math.RoundingMode.HALF_UP);
-            case EARNED: return elAnnual.divide(months, 6, java.math.RoundingMode.HALF_UP);
-            default: return BigDecimal.ZERO;
+            case CASUAL:
+                return clAnnual.divide(months, 6, java.math.RoundingMode.HALF_UP);
+            case SICK:
+                return slAnnual.divide(months, 6, java.math.RoundingMode.HALF_UP);
+            case EARNED:
+                return elAnnual.divide(months, 6, java.math.RoundingMode.HALF_UP);
+            default:
+                return BigDecimal.ZERO;
         }
     }
 }

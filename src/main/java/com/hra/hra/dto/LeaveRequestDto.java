@@ -12,6 +12,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class LeaveRequestDto {
+
+    private Long id;
+
     @NotNull
     private Long employeeId;
 

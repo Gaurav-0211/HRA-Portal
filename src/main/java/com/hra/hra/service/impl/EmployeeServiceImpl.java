@@ -105,13 +105,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setCreatedAt(LocalDateTime.now());
         employee.setUpdatedAt(LocalDateTime.now());
         employee.setJoinDate(LocalDate.now());
+        employee.setActive(true);
 
 
         // Save employee
         Employee savedEmployee = this.employeeRepository.save(employee);
 
         // Initialize balances for the joining month
-        leaveServiceImplementation.initializeBalancesForJoin(savedEmployee);
+        this.leaveServiceImplementation.initializeBalancesForJoin(savedEmployee);
 
         response.setStatus("SUCCESS");
         response.setStatusCode(AppConstants.CREATED);

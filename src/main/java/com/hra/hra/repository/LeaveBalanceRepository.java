@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import jakarta.persistence.LockModeType;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface LeaveBalanceRepository extends JpaRepository<LeaveBalance, Long> {
@@ -15,8 +17,9 @@ public interface LeaveBalanceRepository extends JpaRepository<LeaveBalance, Long
     Optional<LeaveBalance> findByEmployeeIdAndFiscalYearAndLeaveType(Long employeeId, String fiscalYear, LeaveType leaveType);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT b FROM LeaveBalance b WHERE b.employee.id = :employeeId AND b.fiscalYear = :fiscalYear AND b.leaveType = :leaveType")
-    Optional<LeaveBalance> findByEmployeeIdAndFiscalYearAndLeaveTypeForUpdate(@Param("employeeId") Long employeeId,
-                                                                             @Param("fiscalYear") String fiscalYear,
-                                                                             @Param("leaveType") LeaveType leaveType);
+    @Query("SELECT b FROM LeaveBalance b WHERE b.employee.id = :empId AND b.fiscalYear = :fy")
+    List<LeaveBalance> findByEmployeeIdAndFiscalYearForUpdateList(@Param("empId") Long empId,
+                                                                  @Param("fy") String fy);
+
+
 }

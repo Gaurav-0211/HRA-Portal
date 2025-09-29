@@ -47,6 +47,8 @@ public class LeaveRequest {
     private LocalDateTime approvedAt;
     private Long approvedBy;
 
+    private String fiscalYear = "2025";
+
     @Column(length = 1000)
     private String reason;
 }

@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 public class LeaveServiceImplementation {
@@ -105,7 +106,7 @@ public class LeaveServiceImplementation {
             prorata = scale(prorata);
 
             String fy = FiscalYearUtil.fiscalYearFor(join);
-            LeaveBalance balance = leaveBalanceRepository
+            LeaveBalance balance = this.leaveBalanceRepository
                     .findByEmployeeIdAndFiscalYearAndLeaveType(employee.getId(), fy, lt)
                     .orElse(LeaveBalance.builder()
                             .employee(employee)
@@ -116,7 +117,7 @@ public class LeaveServiceImplementation {
 
             balance.setBalance(scale(balance.getBalance().add(prorata)));
             balance.setLastUpdated(LocalDateTime.now());
-            leaveBalanceRepository.save(balance);
+            this.leaveBalanceRepository.save(balance);
 
             // transaction
             LeaveTransaction tx = LeaveTransaction.builder()
@@ -129,7 +130,7 @@ public class LeaveServiceImplementation {
                     .createdAt(LocalDateTime.now())
                     .note("Prorated onboarding accrual")
                     .build();
-            transactionRepository.save(tx);
+            this.transactionRepository.save(tx);
         }
     }
 
@@ -142,31 +143,28 @@ public class LeaveServiceImplementation {
     public void runMonthlyAccrual(LocalDate forDate) {
         YearMonth ym = YearMonth.from(forDate);
         String ymStr = ym.toString();
+        String fy = FiscalYearUtil.fiscalYearFor(forDate);
 
         List<Employee> employees = this.employeeRepository.findAll();
 
         for (Employee emp : employees) {
             if (!emp.isActive()) continue;
-
-            // skip employees who join after this month entirely
             if (emp.getJoinDate().isAfter(ym.atEndOfMonth())) continue;
 
             for (LeaveType lt : LeaveType.values()) {
-                // idempotent check: don't double-accrue
-                boolean exists = this.transactionRepository.existsByEmployeeIdAndTransactionTypeAndYearMonth(
-                        emp.getId(), "ACCRUAL", ymStr);
+                // idempotent check including leaveType
+                boolean exists = this.transactionRepository
+                        .existsByEmployeeIdAndTransactionTypeAndYearMonthAndLeaveType(
+                                emp.getId(), "ACCRUAL", ymStr, lt);
                 if (exists) continue;
 
-                BigDecimal monthly = policy.getMonthlyAccrualForType(lt);
+                BigDecimal monthly = policy.getMonthlyAccrualForType(lt); // e.g. 7/12 or defined constant
 
-                // if joined in this month and not first day, skip full accrual (we expect onboarding gave prorata)
+                // If joined in same month but after day 1, onboarding gave prorata - skip full accrual
                 if (YearMonth.from(emp.getJoinDate()).equals(ym) && emp.getJoinDate().getDayOfMonth() > 1) {
-                    // onboarding likely already gave prorata; skip full accrual
                     continue;
                 }
 
-                // normal full accrual:
-                String fy = FiscalYearUtil.fiscalYearFor(forDate);
                 LeaveBalance balance = this.leaveBalanceRepository
                         .findByEmployeeIdAndFiscalYearAndLeaveType(emp.getId(), fy, lt)
                         .orElse(LeaveBalance.builder()
@@ -175,7 +173,22 @@ public class LeaveServiceImplementation {
                                 .leaveType(lt)
                                 .balance(BigDecimal.ZERO)
                                 .build());
-                balance.setBalance(scale(balance.getBalance().add(monthly)));
+
+                BigDecimal toAdd = scale(monthly);
+
+                // March rounding reconciliation (optional):
+                if (ym.getMonth() == Month.MARCH) {
+                    // compute total already credited this FY for this leave type
+                    BigDecimal creditedSoFar = transactionRepository.sumAccrualsByEmployeeAndFiscalYearAndLeaveType(emp.getId(), fy, lt);
+                    // expectedTotal = annual allocation (e.g. 7)
+                    BigDecimal expectedTotal = policy.getAnnualAllocationForType(lt);
+                    BigDecimal remainder = expectedTotal.subtract(creditedSoFar.add(toAdd));
+                    if (remainder.compareTo(BigDecimal.ZERO) > 0) {
+                        toAdd = toAdd.add(remainder); // add leftover to March
+                    }
+                }
+
+                balance.setBalance(scale(balance.getBalance().add(toAdd)));
                 balance.setLastUpdated(LocalDateTime.now());
                 this.leaveBalanceRepository.save(balance);
 
@@ -183,7 +196,7 @@ public class LeaveServiceImplementation {
                         .employee(emp)
                         .fiscalYear(fy)
                         .leaveType(lt)
-                        .amount(scale(monthly))
+                        .amount(scale(toAdd))
                         .transactionType("ACCRUAL")
                         .yearMonth(ymStr)
                         .createdAt(LocalDateTime.now())
@@ -193,6 +206,7 @@ public class LeaveServiceImplementation {
             }
         }
     }
+
 
     /* -------------------------
        Request leave (PENDING). We compute expectedPaid/unpaid based on current approved usage,
@@ -277,7 +291,7 @@ public class LeaveServiceImplementation {
        ------------------------*/
     @Transactional
     public Response approveLeave(Long requestId, Long approverId) {
-        LeaveRequest req = this.leaveRequestRepository.findById(requestId)
+        LeaveRequest req = leaveRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NoDataExist("Leave request not found"));
 
         if (req.getStatus() != LeaveStatus.PENDING) {
@@ -291,38 +305,36 @@ public class LeaveServiceImplementation {
         List<LeaveRequestSegment> toSaveSegments = new ArrayList<>();
         List<LeaveTransaction> transactions = new ArrayList<>();
 
+        Long empId = req.getEmployee().getId();
+
         for (SegmentInfo s : segments) {
             BigDecimal segDays = daysInclusive(s.start, s.end);
             String ym = s.ym.toString();
-
-            // compute already used paid in this month from APPROVED segments
-            BigDecimal usedPaid = segmentRepository.sumPaidDaysByEmployeeAndYearMonth(req.getEmployee().getId(), ym);
-            BigDecimal remainingCap = policy.getMonthlyPaidCap().subtract(scale(usedPaid));
-            if (remainingCap.compareTo(BigDecimal.ZERO) < 0) remainingCap = BigDecimal.ZERO;
-
-            BigDecimal paidAllowedByCap = segDays.min(remainingCap);
-
             String fy = FiscalYearUtil.fiscalYearFor(s.start);
 
-            // lock balance row to avoid concurrent approvals causing overdraft
-            LeaveBalance balance = leaveBalanceRepository
-                    .findByEmployeeIdAndFiscalYearAndLeaveTypeForUpdate(req.getEmployee().getId(), fy, req.getLeaveType())
-                    .orElseGet(() -> LeaveBalance.builder()
-                            .employee(req.getEmployee())
-                            .fiscalYear(fy)
-                            .leaveType(req.getLeaveType())
-                            .balance(BigDecimal.ZERO)
-                            .build());
+            // Lock total leave balance row for this employee and fiscal year
+            List<LeaveBalance> balances = this.leaveBalanceRepository.findByEmployeeIdAndFiscalYearForUpdateList(empId, fy);
+            LeaveBalance balance;
+            if (balances.isEmpty()) {
+                balance = LeaveBalance.builder()
+                        .employee(req.getEmployee())
+                        .fiscalYear(fy)
+                        .balance(BigDecimal.ZERO)
+                        .build();
+            } else {
+                balance = balances.get(0); // take first row if duplicates exist
+            }
 
             BigDecimal availableBalance = balance.getBalance();
 
-            BigDecimal paidFromBalance = paidAllowedByCap.min(availableBalance);
+            // Deduct from total balance (regardless of leave type)
+            BigDecimal paidFromBalance = segDays.min(availableBalance);
             paidFromBalance = scale(paidFromBalance);
 
             BigDecimal unpaid = segDays.subtract(paidFromBalance);
             unpaid = scale(unpaid.max(BigDecimal.ZERO));
 
-            // deduct from balance
+            // Update total balance
             if (paidFromBalance.compareTo(BigDecimal.ZERO) > 0) {
                 balance.setBalance(scale(balance.getBalance().subtract(paidFromBalance)));
                 balance.setLastUpdated(LocalDateTime.now());
@@ -331,12 +343,12 @@ public class LeaveServiceImplementation {
                 LeaveTransaction deduction = LeaveTransaction.builder()
                         .employee(req.getEmployee())
                         .fiscalYear(fy)
-                        .leaveType(req.getLeaveType())
+                        .leaveType(req.getLeaveType()) // keep type for reporting
                         .amount(paidFromBalance.negate())
                         .transactionType("DEDUCTION")
                         .yearMonth(ym)
                         .createdAt(LocalDateTime.now())
-                        .note("Approved paid leave deduction")
+                        .note("Approved leave deduction (total balance)")
                         .build();
                 transactions.add(deduction);
             }
@@ -355,7 +367,7 @@ public class LeaveServiceImplementation {
                 transactions.add(unpaidTx);
             }
 
-            // create segment record
+            // Create segment record for reporting
             LeaveRequestSegment seg = LeaveRequestSegment.builder()
                     .leaveRequest(req)
                     .yearMonth(ym)
@@ -371,7 +383,7 @@ public class LeaveServiceImplementation {
             totalUnpaid = totalUnpaid.add(unpaid);
         }
 
-        // persist transactions & segments
+        // Persist transactions & segments
         transactionRepository.saveAll(transactions);
         segmentRepository.saveAll(toSaveSegments);
 
@@ -382,9 +394,9 @@ public class LeaveServiceImplementation {
         req.setApprovedBy(approverId);
         leaveRequestRepository.save(req);
 
-        LeaveRequestResponseDto result =  LeaveRequestResponseDto.builder()
+        LeaveRequestResponseDto result = LeaveRequestResponseDto.builder()
                 .id(req.getId())
-                .employeeId(req.getEmployee().getId())
+                .employeeId(empId)
                 .leaveType(req.getLeaveType())
                 .startDate(req.getStartDate())
                 .endDate(req.getEndDate())
@@ -403,27 +415,74 @@ public class LeaveServiceImplementation {
         return response;
     }
 
-    // Get balances for an employee and fiscal year - API
+    // Calculate monthly allocated leave to get leave balances
+    private int getMonthsElapsedInFiscalYear(String fiscalYear, LocalDate joinDate) {
+        // Fiscal year starts in April
+        int fiscalStartYear = Integer.parseInt(fiscalYear.substring(0, 4));
+        LocalDate fiscalStart = LocalDate.of(fiscalStartYear, Month.APRIL, 1);
 
+        // Start counting from later of fiscal start or join date
+        LocalDate accrualStart = joinDate.isAfter(fiscalStart) ? joinDate : fiscalStart;
+
+        LocalDate today = LocalDate.now();
+        if (today.isBefore(accrualStart)) {
+            return 0;
+        }
+
+        Period p = Period.between(accrualStart.withDayOfMonth(1), today.withDayOfMonth(1));
+        return p.getYears() * 12 + p.getMonths() + 1; // inclusive
+    }
+
+
+    // Get balances for an employee (cumulative monthly accrual with carry forward)
     public Response getBalances(Long employeeId, String fiscalYear) {
-        List<LeaveBalanceDto> result =  leaveBalanceRepository.findAll().stream() // for brevity; replace with a filtered query in prod
-                .filter(b -> b.getEmployee().getId().equals(employeeId) && b.getFiscalYear().equals(fiscalYear))
-                .map(b -> LeaveBalanceDto.builder()
-                        .employeeId(employeeId)
-                        .fiscalYear(fiscalYear)
-                        .leaveType(b.getLeaveType())
-                        .balance(scale(b.getBalance()))
-                        .build())
+        Employee employee = this.employeeRepository.findById(employeeId)
+                .orElseThrow(()-> new NoDataExist("No employee fetched with given employee ID"));
+
+        List<LeaveBalanceDto> balances = Arrays.stream(LeaveType.values())
+                .map(type -> {
+                    // 1. Months passed till now in this FY
+                    int monthsElapsed = getMonthsElapsedInFiscalYear(fiscalYear, employee.getJoinDate());
+                    // 2. Total accrual till now (monthly * months elapsed)
+                    BigDecimal accrued = policy
+                            .getMonthlyAccrualForType(type)
+                            .multiply(BigDecimal.valueOf(monthsElapsed));
+
+                    // 3. Leaves already used till now
+                    BigDecimal used = leaveRequestRepository
+                            .findByEmployeeId(employeeId)
+                            .stream()
+                            .filter(req -> "APPROVED".equals(req.getStatus()))
+                            .filter(req -> FiscalYearUtil.fiscalYearFor(req.getStartDate()).equals(fiscalYear))
+                            .map(LeaveRequest::getRequestedDays)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    // 4. Remaining balance (carry forward included automatically)
+                    BigDecimal balance = accrued.subtract(used);
+                    if (balance.compareTo(BigDecimal.ZERO) < 0) {
+                        balance = BigDecimal.ZERO; // no negatives
+                    }
+
+                    return LeaveBalanceDto.builder()
+                            .employeeId(employeeId)
+                            .fiscalYear(fiscalYear)
+                            .leaveType(type)
+                            .balance(balance.setScale(2, RoundingMode.HALF_UP))
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         response.setStatus("SUCCESS");
-        response.setMessage("Leave fetched successfully");
-        response.setData(result);
+        response.setMessage("Leave balances fetched successfully");
+        response.setData(balances);
         response.setStatusCode(200);
         response.setResponse_message("Process Executed success");
 
         return response;
     }
+
+
+
 
     // Get Leave History of An Employee - API
     public Response getLeaveHistory(Long empId){
@@ -471,6 +530,17 @@ public class LeaveServiceImplementation {
         response.setStatus("SUCCESS");
         response.setMessage("Leave rejected successfully");
         response.setData(this.mapper.map(saved, LeaveRequestDto.class));
+        response.setStatusCode(200);
+        response.setResponse_message("Process executed success");
+        return response;
+    }
+
+    public Response getAllLeave(){
+        List<LeaveRequest> allLeave = this.leaveRequestRepository.findAll();
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Leave fetched successfully");
+        response.setData(allLeave.stream().map((leave)-> this.mapper.map(leave, LeaveRequestDto.class)).collect(Collectors.toList()));
         response.setStatusCode(200);
         response.setResponse_message("Process executed success");
         return response;
