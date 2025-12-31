@@ -46,6 +46,11 @@ public class Employee implements UserDetails {
 
     private boolean active = true;
 
+    private LocalDate dob;
+
+    private String bloodGroup;
+
+
     // Many Employee can have same role
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)

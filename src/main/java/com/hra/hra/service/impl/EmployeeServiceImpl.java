@@ -2,6 +2,7 @@ package com.hra.hra.service.impl;
 
 import com.hra.hra.config.AppConstants;
 import com.hra.hra.dto.EmployeeDto;
+import com.hra.hra.dto.EmployeeDtoUser;
 import com.hra.hra.dto.PageResponse;
 import com.hra.hra.dto.Response;
 import com.hra.hra.entity.Department;
@@ -431,6 +432,28 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setStatus("SUCCESS");
         response.setStatusCode(AppConstants.OK);
         response.setMessage("Password changed successfully");
+        response.setData(this.mapper.map(saved, EmployeeDto.class));
+        response.setResponse_message("Process execution completed");
+
+        return response;
+
+    }
+
+    @Override
+    public Response updateEmployeeSelf(Long id, EmployeeDtoUser dto) {
+        Employee emp = this.employeeRepository.findById(id)
+                .orElseThrow(()-> new NoDataExist("No Employee exist with given id"));
+
+        emp.setName(dto.getName());
+        emp.setContactNumber(dto.getContactNumber());
+        emp.setBloodGroup(dto.getBloodGroup());
+        emp.setAddress(dto.getAddress());
+        emp.setDob(dto.getDob());
+        Employee saved = this.employeeRepository.save(emp);
+
+        response.setStatus("SUCCESS");
+        response.setStatusCode(AppConstants.OK);
+        response.setMessage("Details updated successfully");
         response.setData(this.mapper.map(saved, EmployeeDto.class));
         response.setResponse_message("Process execution completed");
 

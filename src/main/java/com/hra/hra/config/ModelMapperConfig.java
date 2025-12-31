@@ -27,9 +27,9 @@ public class ModelMapperConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Employee Management System - API")
+                        .title("HRA Portal - API")
                         .version("1.0")
-                        .description("API documentation for Employee Management System")
+                        .description("API documentation for HRA Portal")
                         .contact(new Contact().email("gaurav@gmail.com").name("Kumar").url("abc@gmail.com")));
     }
 

@@ -131,4 +131,10 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    // PUT request to update employee details by him
+    public ResponseEntity<Response> updateDetailsSelf(@RequestParam Long id, @RequestBody EmployeeDtoUser dto){
+        Response response = this.employeeService.updateEmployeeSelf(id, dto);
+        return ResponseEntity.ok(response);
+    }
+
 }

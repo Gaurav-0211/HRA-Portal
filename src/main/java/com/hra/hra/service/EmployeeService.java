@@ -1,6 +1,7 @@
 package com.hra.hra.service;
 
 import com.hra.hra.dto.EmployeeDto;
+import com.hra.hra.dto.EmployeeDtoUser;
 import com.hra.hra.dto.Response;
 
 public interface EmployeeService {
@@ -31,6 +32,9 @@ public interface EmployeeService {
 
     // Auth login to generate token to api access
     //Response authLogin(String email, String password);
+
+    // Update employee by self from user
+    Response updateEmployeeSelf(Long id, EmployeeDtoUser dto);
 
 
 
